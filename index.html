@@ -1,0 +1,99 @@
+<html>
+<head>
+    <title>OpenStreetMap</title>
+ 
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
+ 
+    <script type="text/javascript">
+        var lat=51.508;
+        var lon=-0.118;
+        var zoom=13;
+ 
+        var map; //complex object of type OpenLayers.Map
+ 
+        //Initialise the 'map' object
+        function init() {
+ 
+            map = new OpenLayers.Map ("map", {
+                controls:[
+                    new OpenLayers.Control.Navigation(),
+                    // new OpenLayers.Control.PanZoomBar(),
+                    // new OpenLayers.Control.Attribution()
+					      ],
+                maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
+                maxResolution: 156543.0399,
+                numZoomLevels: 19,
+                units: 'm',
+                projection: new OpenLayers.Projection("EPSG:900913"),
+                displayProjection: new OpenLayers.Projection("EPSG:4326")
+            } );
+ 
+ 
+            // Define the map layer
+            // Other defined layers are OpenLayers.Layer.OSM.Mapnik, OpenLayers.Layer.OSM.Maplint and OpenLayers.Layer.OSM.CycleMap
+            //layerTilesAtHome = new OpenLayers.Layer.OSM.Osmarender("Osmarender");
+			      layerTilesAtHome = new OpenLayers.Layer.OSM.Mapnik("Openstreetmap Mapnik");
+            map.addLayer(layerTilesAtHome);
+/* 
+            if( ! map.getCenter() ){
+                var lonLat = new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+                map.setCenter (lonLat, zoom);
+            }
+*/
+        }
+
+function ol_serviceinfo(m) {
+  var info = {};
+  info.title = document.title;
+
+  // projection and extent
+  var dprojo = null;
+  var proj = map.projection.projCode;
+  if (map.displayProjection != null) {
+    var dproj = map.displayProjection.projCode;
+    dprojo = new OpenLayers.Projection(dproj);
+
+    info.projection = dproj; 
+    info.extent = map.maxExtent.transform(
+      map.getProjectionObject(),
+      dprojo
+    ).toArray();
+  }
+  else {
+    info.projection = proj;
+    info.extent = map.maxExtent.toArray();
+  }
+
+  // layers
+  info.layers = {};
+  for(var i=0; i<m.layers.length; i++) {
+    info.layers[i] = {};
+    info.layers[i].name = m.layers[i].name;
+
+    if (dprojo==null) {
+      info.layers[i].extent = m.layers[i].maxExtent.toArray();
+    }
+    else {
+      info.layers[i].extent = m.layers[i].maxExtent.transform(
+        map.getProjectionObject(),
+        dprojo
+      ).toArray();
+    }
+  }
+
+  return info;
+};
+
+/*
+JSON.stringify()
+*/
+
+    </script>
+</head>
+ 
+<body onload="init();" style="padding:0px; margin:0px">
+    <div style="width:100%; height:100%; margin:0px; padding:0px;" id="map"></div>
+</body>
+
+</html>
