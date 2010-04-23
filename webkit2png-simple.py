@@ -44,6 +44,10 @@ def onLoadFinished(result):
     print 'service title : %s' % si.get(QString('title')) 
     for qi, layer in si.get(QString('layers'),[]).iteritems():
       print "  [%s] %s" % (qi, layer.get(QString('name')))
+
+    # meta info
+    for mk, mv in wframe.metaData().iteritems():
+      print "meta %s : %s" % (unicode(mk), unicode(mv))
     sys.exit(0)
 
 
