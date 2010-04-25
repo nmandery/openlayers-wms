@@ -18,6 +18,9 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+# add our own cmake modules
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
+
 # Find Qt4
 ADD_DEFINITIONS(-DQT_STATICPLUGIN)
 FIND_PACKAGE( Qt4 REQUIRED )
