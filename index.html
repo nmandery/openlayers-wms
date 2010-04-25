@@ -39,12 +39,10 @@
             //layerTilesAtHome = new OpenLayers.Layer.OSM.Osmarender("Osmarender");
 			      layerTilesAtHome = new OpenLayers.Layer.OSM.Mapnik("Openstreetmap Mapnik");
             map.addLayer(layerTilesAtHome);
-/* 
             if( ! map.getCenter() ){
                 var lonLat = new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
                 map.setCenter (lonLat, zoom);
             }
-*/
         }
 
 function ol_serviceinfo(m) {
