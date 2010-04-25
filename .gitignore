@@ -2,3 +2,10 @@
 *.pyc
 *.png
 *.jpg
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+moc_*.cxx
+openlayers-wms
+.openlayers-wms
