@@ -1,5 +1,8 @@
 #include "WebkitWorker.h"
 
+// todo: 
+//   * log JS error: QWebPage::javaScriptConsoleMessage
+
 WebkitWorker::WebkitWorker() {
 
   // webkit settings
@@ -66,5 +69,4 @@ void WebkitWorker::render(QBuffer & target, const char * format) {
   painter.end();
 
   image.save(&target, format);
-
 }
