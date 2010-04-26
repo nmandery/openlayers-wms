@@ -1,7 +1,21 @@
 #include "OpenlayersWMS.h"
 
-void OpenlayersWMS::respond()
-{
+
+void OpenlayersWMS::initialize() {
+  if (initialized != INIT_DONE) {
+    QUrl url = QUrl("http://localhost/");
+    worker.loadUrl(url);  
+
+    initialized = INIT_DONE;
+  }  
+}
+
+
+void OpenlayersWMS::respond() {
+
+  // initialize on first request
+  initialize();
+
   if (request.isValid()) {
     QString p_service;
     QString p_request;
@@ -27,9 +41,11 @@ void OpenlayersWMS::respond()
     }
 
     if (p_service != "WMS") {
-      QString msgCode = QString("unknownService");
-      QString msgText = QString("This is a WMS (more or less). try SERVICE=WMS");
-      serviceException(msgCode, msgText);  
+
+      serviceException(
+        "unknownService",
+        "This is a WMS (more or less). try SERVICE=WMS"
+        );  
       return;
     }
 
@@ -37,13 +53,16 @@ void OpenlayersWMS::respond()
     if (p_request == "GETMAP") {
       getMap();
     }
+
     else if (p_request == "GETCAPABILITIES") {
       getCapabilities();
     }
+
     else {
-      QString msgCode = QString("unknownRequest");
-      QString msgText = QString("Unknown/missing REQUEST parameter");
-      serviceException(msgCode, msgText);  
+      serviceException(
+        "unknownRequest", 
+        "Unknown/missing REQUEST parameter"
+        );  
       return;
     }
   }
@@ -54,7 +73,7 @@ void OpenlayersWMS::getCapabilities()
 {
   QString onlineResource = "http://example.com/df";
 
-  FastCgiQt::ClientIOInterface::setHeader("Content-Type","application/xml");
+  FastCgiQt::ClientIOInterface::setHeader("Content-Type", MIMETYPE_XML);
   
   out << XML_HEADER;
 
@@ -69,10 +88,11 @@ void OpenlayersWMS::getCapabilities()
   out << "</WMT_MS_Capabilities>";
 }
 
-void OpenlayersWMS::serviceException(QString &msgCode, QString &msgText)
+
+void OpenlayersWMS::serviceException( const char *msgCode, const char *msgText)
 {
   
-  FastCgiQt::ClientIOInterface::setHeader("Content-Type","application/vnd.ogc.se+xml");
+  FastCgiQt::ClientIOInterface::setHeader("Content-Type", MIMETYPE_SE);
 
   out << XML_HEADER ;
   out << "<ServiceExceptionReport version=\"1.1.1\">"
@@ -82,7 +102,35 @@ void OpenlayersWMS::serviceException(QString &msgCode, QString &msgText)
       << "</ServiceExceptionReport>";
 }
 
+
 void OpenlayersWMS::getMap() {
-  out << "getmap";
+  try {
+    QByteArray bytes;
+    QBuffer buffer(&bytes);
+    buffer.open(QIODevice::WriteOnly);
+
+    worker.render( buffer, "PNG");
+
+    FastCgiQt::ClientIOInterface::setHeader("Content-Type", MIMETYPE_PNG);
+    // write binary data
+    out.device()->write(bytes);
+  }
+  catch(int e) {
+    switch (e) {
+      case ERR_NO_LOAD_URL:
+        serviceException(
+          "noLoad", 
+          "Could not load the HTML file."
+        );  
+        return;        
+        break;
+      default:
+        serviceException(
+          "unknownError", 
+          "A unknown Error occured - great error message, isn't it?"
+        );  
+        return;           
+      }
+  }
 
 }

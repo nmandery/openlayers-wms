@@ -7,7 +7,7 @@
 int main(int argc, char** argv)
 {
 	QApplication application(argc, argv);
-	application.setApplicationName("HelloWorld");
+	application.setApplicationName("OpenlayerWMS");
 
 	FastCgiQt::Manager manager(&OpenlayersWMS::create);
 
