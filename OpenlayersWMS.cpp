@@ -3,6 +3,9 @@
 
 void OpenlayersWMS::initialize() {
   if (initialized != INIT_DONE) {
+
+    qDebug("initializing OpenlayerWMS instance");
+
     QUrl url = QUrl("http://localhost/");
     worker.loadUrl(url);  
 
