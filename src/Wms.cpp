@@ -1,16 +1,16 @@
-#include "OpenlayersWMS.h"
+#include "Wms.h"
 
 #include <QTextStream>
 
 
-OpenlayersWMS::OpenlayersWMS(QUrl& url) {
+Wms::Wms(QUrl& url) {
   
   qDebug("initializing OpenlayerWMS instance");
   worker.loadUrl(url);  
 }
 
 
-void OpenlayersWMS::respond(FastCgiQt::Request* request) {
+void Wms::respond(FastCgiQt::Request* request) {
 
   m_request = request;
 
@@ -73,7 +73,7 @@ void OpenlayersWMS::respond(FastCgiQt::Request* request) {
 }
 
 
-void OpenlayersWMS::getCapabilities()
+void Wms::getCapabilities()
 {
   QByteArray data;
   QTextStream out(&data);
@@ -98,7 +98,7 @@ void OpenlayersWMS::getCapabilities()
 }
 
 
-void OpenlayersWMS::serviceException( const char *msgCode, const char *msgText)
+void Wms::serviceException( const char *msgCode, const char *msgText)
 {
   
   QByteArray data;
@@ -122,7 +122,7 @@ void OpenlayersWMS::serviceException( const char *msgCode, const char *msgText)
 }
 
 
-void OpenlayersWMS::getMap() {
+void Wms::getMap() {
   try {
 
     QByteArray bytes;

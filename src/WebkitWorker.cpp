@@ -3,11 +3,6 @@
 
 WebkitWorker::WebkitWorker() {
 
-  // webkit settings
-  page.settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-  page.settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled, true);
-  page.settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-
   // connect signals
   connect(page.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(setLoadingFinished(bool))); //qt4.6
   connect(page.mainFrame(), SIGNAL(loadStarted()), this, SLOT(setLoadingStarted())); // qt4.6
@@ -15,9 +10,6 @@ WebkitWorker::WebkitWorker() {
   // no scrollbars
   page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
   page.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
-
-  //view->setPage(&page);
-  //window->setCentralWidget(view);
 
   timeout = 0;
 }
@@ -71,3 +63,4 @@ void WebkitWorker::render(QBuffer & target, const char * format) {
 
   image.save(&target, format);
 }
+

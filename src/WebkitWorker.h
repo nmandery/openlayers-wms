@@ -1,5 +1,7 @@
 #include <QtGui/QtGui>
-#include <QtWebKit/QtWebKit>
+
+#include "WebkitMap.h"
+
 
 #define ERR_NO_LOAD_URL 1
 
@@ -20,12 +22,9 @@ class WebkitWorker : public QObject {
     void setLoadingStarted();
 
   private:
-    QWebPage page;
-    //QWebView * view;
-    //QMainWindow * window;
+    WebkitMap page;
     int timeout;
     bool loading_finished;
     bool loading_success;
-
 };
 

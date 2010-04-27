@@ -1,4 +1,4 @@
-#include "OpenlayersWMS.h"
+#include "Wms.h"
 #include <FastCgiQt/Manager.h>
 
 // we need a GUI application to run webkit
@@ -12,7 +12,7 @@ int main(int argc, char** argv)
   QUrl url("http://localhost/");
 
 	FastCgiQt::Manager manager;
-  OpenlayersWMS responder(url);
+  Wms responder(url);
 
   responder.connect(
       &manager,

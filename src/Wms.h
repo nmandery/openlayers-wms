@@ -18,11 +18,11 @@
 #define HTTP_CONTENT_LEN "Content-Length"
 
 
-class OpenlayersWMS : public QObject {
+class Wms : public QObject {
 	Q_OBJECT;
 
   public:
-    OpenlayersWMS(QUrl&);
+    Wms(QUrl&);
 
   public slots:
       void respond(FastCgiQt::Request*);
