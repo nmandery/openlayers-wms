@@ -1,7 +1,5 @@
 #include "WebkitWorker.h"
 
-// todo: 
-//   * log JS error: QWebPage::javaScriptConsoleMessage
 
 WebkitWorker::WebkitWorker() {
 

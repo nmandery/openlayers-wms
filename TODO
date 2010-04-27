@@ -1,0 +1,13 @@
+Priority: High
+
+ * Longlived Responders - test with fcgi deployment
+ * Image zooming and scaling
+
+
+Priority: Medium
+
+ * Log JS Errors using QWebPage::javaScriptConsoleMessage
+
+
+Priority: Low
+
