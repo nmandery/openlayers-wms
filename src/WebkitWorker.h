@@ -13,6 +13,7 @@ class WebkitWorker : public QObject {
     void setTimeout(int seconds); 
     int getTimeout();
     void render(QBuffer & target, const char * format);
+    const QString title();
 
   public slots:
     void setLoadingFinished(bool);

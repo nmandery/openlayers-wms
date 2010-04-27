@@ -22,6 +22,9 @@ WebkitWorker::WebkitWorker() {
   timeout = 0;
 }
 
+const QString WebkitWorker::title() {
+  return page.mainFrame()->title();  
+}
 
 void WebkitWorker::setLoadingFinished(bool success) {
   loading_finished = true;

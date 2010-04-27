@@ -3,7 +3,7 @@
 #include "WebkitWorker.h"
 
 
-#define XML_HEADER "<?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>\n"
+#define XML_HEADER "<?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>"
 
 #define INIT_DONE 12
 
@@ -12,6 +12,10 @@
 #define MIMETYPE_SE  "application/vnd.ogc.se+xml"
 #define MIMETYPE_PNG "image/png"
 #define MIMETYPE_JPG "image/jpeg"
+
+// http headers
+#define HTTP_CONTENT_TYPE "Content-Type"
+#define HTTP_CONTENT_LEN "Content-Length"
 
 
 class OpenlayersWMS : public QObject {

@@ -17,6 +17,11 @@ void OpenlayersWMS::respond(FastCgiQt::Request* request) {
   QString p_service;
   QString p_request;
   QString p_version;
+  QString p_format;
+  QString p_srs;
+  QString p_bbox;
+  QString p_width;
+  QString p_height;
 
   // get all variables from the query string
   QHash<QByteArray, QByteArray> p_getVars = request->rawValues(FastCgiQt::GetData);
@@ -34,6 +39,9 @@ void OpenlayersWMS::respond(FastCgiQt::Request* request) {
     }
     else if (key == "VERSION") {
       p_version = it.value();
+    }
+    else if (key == "FORMAT") {
+      p_format = it.value();
     }
   }
 
@@ -67,56 +75,70 @@ void OpenlayersWMS::respond(FastCgiQt::Request* request) {
 
 void OpenlayersWMS::getCapabilities()
 {
+  QByteArray data;
+  QTextStream out(&data);
 
-  QTextStream out(m_request);
-  m_request->setHeader("Content-Type", MIMETYPE_XML);
-
-  QString onlineResource = "http://example.com/df";
   
-  out << XML_HEADER;
-
-  out << "<WMT_MS_Capabilities version=\"1.1.1\">";
-
+  out << XML_HEADER << endl;
+  out << "<WMT_MS_Capabilities version=\"1.1.1\">" << endl;
   out << "<Service>"
       << "<Name>OGC:WMS</Name>"
-      << "<Title>XXXX</Title>"
-      << "<OnlineResource xlink:href=\"cccccs\"/>"
-      << "</Service>";
+      << "<Title>" << worker.title() << "</Title>"
+      << "<OnlineResource xlink:href=\"" << m_request->url(FastCgiQt::LocationUrl).toEncoded() << "\"/>"
+      << "</Service>"
+      << endl;
+  out << "</WMT_MS_Capabilities>" << endl;
 
-  out << "</WMT_MS_Capabilities>";
+  out.flush();
+
+  m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_XML);
+  QByteArray content_length = QByteArray::number(data.length());
+  m_request->setHeader(HTTP_CONTENT_LEN, content_length );
+  m_request->write(data);
 }
 
 
 void OpenlayersWMS::serviceException( const char *msgCode, const char *msgText)
 {
   
-  QTextStream out(m_request);
-  m_request->setHeader("Content-Type", MIMETYPE_SE);
+  QByteArray data;
+  QTextStream out(&data);
 
-  out << XML_HEADER ;
+  out << XML_HEADER << endl;
   out << "<ServiceExceptionReport version=\"1.1.1\">"
       << "<ServiceException code=\"" << msgCode << "\">\n"
       << msgText << "\n"
       << "</ServiceException>"
-      << "</ServiceExceptionReport>";
+      << "</ServiceExceptionReport>"
+      << endl;
+
+  out.flush();
+
+  m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_SE);
+  QByteArray content_length = QByteArray::number(data.length());
+  m_request->setHeader(HTTP_CONTENT_LEN, content_length );
+  m_request->write(data);
+
 }
 
 
 void OpenlayersWMS::getMap() {
   try {
 
-    // write binary data
-    m_request->setHeader("Content-Type", MIMETYPE_PNG);
-
     QByteArray bytes;
-    QBuffer buffer(&bytes);
+    QBuffer buffer(&bytes); // write binary data
     buffer.open(QIODevice::WriteOnly);
 
     worker.render( buffer, "PNG");
 
+    m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_PNG);
+    QByteArray content_length = QByteArray::number(bytes.length());
+    m_request->setHeader(HTTP_CONTENT_LEN, content_length );
     m_request->write(bytes);
+
   }
   catch(int e) {
+
     switch (e) {
       case ERR_NO_LOAD_URL:
         serviceException(
