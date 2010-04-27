@@ -1,4 +1,4 @@
-#include <FastCgiQt/Responder.h>
+#include <FastCgiQt/Request.h>
 #include "Common.h"
 #include "WebkitWorker.h"
 
@@ -14,18 +14,20 @@
 #define MIMETYPE_JPG "image/jpeg"
 
 
-class OpenlayersWMS : public FastCgiQt::Responder {
+class OpenlayersWMS : public QObject {
 	Q_OBJECT;
-	FASTCGIQT_RESPONDER_API_V1;
-	RESPONDER(OpenlayersWMS);
+
+  public:
+    OpenlayersWMS(QUrl&);
+
+  public slots:
+      void respond(FastCgiQt::Request*);
+
   private:
 		void getCapabilities();
 		void getMap();
 		void serviceException(const char* msgCode, const char* msgText);
     WebkitWorker worker;
-    int initialized;
-    void initialize();
-	public:
-		void respond();
+    FastCgiQt::Request* m_request;
 
 };

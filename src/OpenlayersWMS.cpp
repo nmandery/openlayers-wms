@@ -1,82 +1,77 @@
 #include "OpenlayersWMS.h"
 
+#include <QTextStream>
 
-void OpenlayersWMS::initialize() {
-  if (initialized != INIT_DONE) {
 
-    qDebug("initializing OpenlayerWMS instance");
-
-    QUrl url = QUrl("http://localhost/");
-    worker.loadUrl(url);  
-
-    initialized = INIT_DONE;
-  }  
+OpenlayersWMS::OpenlayersWMS(QUrl& url) {
+  
+  qDebug("initializing OpenlayerWMS instance");
+  worker.loadUrl(url);  
 }
 
 
-void OpenlayersWMS::respond() {
+void OpenlayersWMS::respond(FastCgiQt::Request* request) {
 
-  // initialize on first request
-  initialize();
+  m_request = request;
 
-  if (request.isValid()) {
-    QString p_service;
-    QString p_request;
-    QString p_version;
+  QString p_service;
+  QString p_request;
+  QString p_version;
 
-    // get all variables from the query string
-    QHash<QString, QString> p_getVars = request.getData();
-    for ( QHash<QString, QString>::ConstIterator it = p_getVars.constBegin();
-      it != p_getVars.constEnd();
-      ++it) {
+  // get all variables from the query string
+  QHash<QByteArray, QByteArray> p_getVars = request->rawValues(FastCgiQt::GetData);
+  for ( QHash<QByteArray, QByteArray>::ConstIterator it = p_getVars.constBegin();
+    it != p_getVars.constEnd();
+    ++it) {
 
-      QString key = it.key().toUpper();
+    QString key = QString(it.key().toUpper());
 
-      if (key == "SERVICE") {
-        p_service = it.value().toUpper();
-      }
-      else if (key == "REQUEST") {
-        p_request = it.value().toUpper();
-      }
-      else if (key == "VERSION") {
-        p_version = it.value();
-      }
+    if (key == "SERVICE") {
+      p_service = it.value().toUpper();
     }
-
-    if (p_service != "WMS") {
-
-      serviceException(
-        "unknownService",
-        "This is a WMS (more or less). try SERVICE=WMS"
-        );  
-      return;
+    else if (key == "REQUEST") {
+      p_request = it.value().toUpper();
     }
-
-    // dispatch requests
-    if (p_request == "GETMAP") {
-      getMap();
+    else if (key == "VERSION") {
+      p_version = it.value();
     }
+  }
 
-    else if (p_request == "GETCAPABILITIES") {
-      getCapabilities();
-    }
+  if (p_service != "WMS") {
 
-    else {
-      serviceException(
-        "unknownRequest", 
-        "Unknown/missing REQUEST parameter"
-        );  
-      return;
-    }
+    serviceException(
+      "unknownService",
+      "This is a WMS (more or less). try SERVICE=WMS"
+      );  
+    return;
+  }
+
+  // dispatch requests
+  if (p_request == "GETMAP") {
+    getMap();
+  }
+
+  else if (p_request == "GETCAPABILITIES") {
+    getCapabilities();
+  }
+
+  else {
+    serviceException(
+      "unknownRequest", 
+      "Unknown/missing REQUEST parameter"
+      );  
+    return;
   }
 }
 
 
 void OpenlayersWMS::getCapabilities()
 {
-  QString onlineResource = "http://example.com/df";
 
-  FastCgiQt::ClientIOInterface::setHeader("Content-Type", MIMETYPE_XML);
+  QTextStream out(m_request);
+  m_request->setHeader("Content-Type", MIMETYPE_XML);
+
+  QString onlineResource = "http://example.com/df";
   
   out << XML_HEADER;
 
@@ -95,7 +90,8 @@ void OpenlayersWMS::getCapabilities()
 void OpenlayersWMS::serviceException( const char *msgCode, const char *msgText)
 {
   
-  FastCgiQt::ClientIOInterface::setHeader("Content-Type", MIMETYPE_SE);
+  QTextStream out(m_request);
+  m_request->setHeader("Content-Type", MIMETYPE_SE);
 
   out << XML_HEADER ;
   out << "<ServiceExceptionReport version=\"1.1.1\">"
@@ -108,15 +104,17 @@ void OpenlayersWMS::serviceException( const char *msgCode, const char *msgText)
 
 void OpenlayersWMS::getMap() {
   try {
+
+    // write binary data
+    m_request->setHeader("Content-Type", MIMETYPE_PNG);
+
     QByteArray bytes;
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::WriteOnly);
 
     worker.render( buffer, "PNG");
 
-    FastCgiQt::ClientIOInterface::setHeader("Content-Type", MIMETYPE_PNG);
-    // write binary data
-    out.device()->write(bytes);
+    m_request->write(bytes);
   }
   catch(int e) {
     switch (e) {

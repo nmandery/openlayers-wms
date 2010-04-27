@@ -2,7 +2,7 @@
 FIND_PATH(FASTCGIQT_INCLUDE_DIR NAMES FastCgiQt/Request.h)
 
 # Look for the library.
-FIND_LIBRARY(FASTCGIQT_LIBRARY NAMES libFastCgiQt FastCgiQt)
+FIND_LIBRARY(FASTCGIQT_LIBRARY NAMES libFastCgiQt0 FastCgiQt0)
 
 # handle the QUIETLY and REQUIRED arguments and set FASTCGIQT_FOUND to TRUE if 
 # all listed variables are TRUE
