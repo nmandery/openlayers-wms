@@ -45,6 +45,29 @@
             }
         }
 
+
+
+
+JsWmsAPI = function () {
+
+  this.map = null;
+
+  this.title = function() { return document.title;};
+
+  this.getProjectionCode = function() {
+    if (typeof map.displayProjection === 'undefined') {
+      return map.projection.projCode;  
+    }
+    else {
+      return map.displayProjection.projCode;  
+    }
+  };
+
+};
+
+mapapi = new JsWmsAPI();
+mapapi.map = map;
+
 function ol_serviceinfo(m) {
   var info = {};
   info.title = document.title;

@@ -8,3 +8,27 @@ WebkitMap::WebkitMap() : QWebPage() {
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
   
 }
+
+const QString WebkitMap::getProjection() {
+  QString proj;
+
+  QVariant jsres = mainFrame()->evaluateJavaScript("mapapi.getProjectionCode();");
+  qDebug() << jsres;
+  if (!jsres.canConvert<QString>()) {
+    qCritical() << "WebkitMap::getProjection() : cannot convert to string";  
+  }
+  else {
+    proj = jsres.toString();
+  }
+  return proj;
+}
+
+
+QList<Layer> WebkitMap::getLayers() {
+  QList<Layer> layers;
+
+  QVariant jsres = mainFrame()->evaluateJavaScript("mapapi.getLayers();");
+  qDebug() << jsres;
+
+  return layers;
+}

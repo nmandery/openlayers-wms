@@ -1,4 +1,5 @@
 #include <QtWebKit/QtWebKit>
+#include "Layer.h"
 
 
 class WebkitMap : public QWebPage {
@@ -6,7 +7,9 @@ class WebkitMap : public QWebPage {
 
   public:
     WebkitMap();
+    const QString getProjection();    
 
+    QList<Layer> getLayers();
     /*
     // info from metatags
     const QString getDescription();

@@ -1,5 +1,6 @@
 Priority: High
 
+ * QObject(parent)
  * Longlived Responders - test with fcgi deployment
  * Image zooming and scaling
 

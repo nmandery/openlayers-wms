@@ -19,6 +19,7 @@ FILE(GLOB HEADERS *.h)
 FILE(GLOB SOURCES *.cpp)
 QT4_WRAP_CPP(MOC_SOURCES ${HEADERS})
 ADD_EXECUTABLE(openlayers-wms.fcgi ${SOURCES} ${MOC_SOURCES})
+
 # webkit is not linked when only QT_LIBRARIES are specified,
 # explicit adding of QT_QTWEBKIT_LIBRARY is necesary
 TARGET_LINK_LIBRARIES(openlayers-wms.fcgi ${QT_LIBRARIES} ${QT_QTWEBKIT_LIBRARY} ${FASTCGIQT_LIBRARIES})

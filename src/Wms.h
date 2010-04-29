@@ -1,6 +1,5 @@
 #include <FastCgiQt/Request.h>
-#include "Common.h"
-#include "WebkitWorker.h"
+#include "MapRenderer.h"
 
 
 #define XML_HEADER "<?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>"
@@ -31,7 +30,7 @@ class Wms : public QObject {
 		void getCapabilities();
 		void getMap();
 		void serviceException(const char* msgCode, const char* msgText);
-    WebkitWorker worker;
+    MapRenderer renderer;
     FastCgiQt::Request* m_request;
 
 };

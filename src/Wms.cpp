@@ -3,10 +3,11 @@
 #include <QTextStream>
 
 
+
 Wms::Wms(QUrl& url) {
   
   qDebug("initializing OpenlayerWMS instance");
-  worker.loadUrl(url);  
+  renderer.loadUrl(url);  
 }
 
 
@@ -83,10 +84,11 @@ void Wms::getCapabilities()
   out << "<WMT_MS_Capabilities version=\"1.1.1\">" << endl;
   out << "<Service>"
       << "<Name>OGC:WMS</Name>"
-      << "<Title>" << worker.title() << "</Title>"
+      << "<Title>" << renderer.title() << "</Title>"
       << "<OnlineResource xlink:href=\"" << m_request->url(FastCgiQt::LocationUrl).toEncoded() << "\"/>"
       << "</Service>"
       << endl;
+  out << renderer.map.getProjection() << endl;
   out << "</WMT_MS_Capabilities>" << endl;
 
   out.flush();
@@ -129,7 +131,7 @@ void Wms::getMap() {
     QBuffer buffer(&bytes); // write binary data
     buffer.open(QIODevice::WriteOnly);
 
-    worker.render( buffer, "PNG");
+    renderer.render( buffer, "PNG");
 
     m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_PNG);
     QByteArray content_length = QByteArray::number(bytes.length());
