@@ -36,9 +36,7 @@ void MapRenderer::loadUrl(QUrl &url) {
 
     // TODO: handle timeouts  
     
-    while (QApplication::instance()->hasPendingEvents()) {
-      QApplication::instance()->processEvents();
-    }
+    QApplication::instance()->processEvents(QEventLoop::AllEvents, 10);
   }
 
   if (!loading_success) {

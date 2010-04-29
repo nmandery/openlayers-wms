@@ -82,6 +82,9 @@ void Wms::getCapabilities()
   
   out << XML_HEADER << endl;
   out << "<WMT_MS_Capabilities version=\"1.1.1\">" << endl;
+
+  // service info
+
   out << "<Service>"
       << "<Name>OGC:WMS</Name>"
       << "<Title>" << renderer.title() << "</Title>"
@@ -89,6 +92,17 @@ void Wms::getCapabilities()
       << "</Service>"
       << endl;
   out << renderer.map.getProjection() << endl;
+
+  // image formats
+  
+  QList<QByteArray> formats = renderer.getImageFormats();
+  for (QList<QByteArray>::ConstIterator fit = formats.constBegin();
+    fit != formats.constEnd();
+    ++fit) {
+    QByteArray fb = *fit;
+    out << "<Format>" << QString(fb) << "</Format>";  
+  }
+
   out << "</WMT_MS_Capabilities>" << endl;
 
   out.flush();
