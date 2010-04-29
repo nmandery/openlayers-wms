@@ -21,4 +21,7 @@ class WebkitMap : public QWebPage {
     // info collected by javascript calls
     const QSet<Layer> getLayers();
     */
+
+  protected:
+    void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
 };
