@@ -16,13 +16,13 @@ class MapRenderer : public QObject {
     bool refresh();
     void setTimeout(int seconds); 
     int getTimeout();
-    void render(QBuffer & target, const char * format);
+    bool render(QBuffer & target, const char *format);
     const QString title();
     QList<QByteArray> getImageFormats();
     bool hasLoaded();
 
   signals:
-    void errorOccured(const char *, const char *);
+    void errorMsg(const char *, const char *);
 
   public slots:
     void setLoadingFinished(bool);

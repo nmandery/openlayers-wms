@@ -10,11 +10,16 @@ Wms::Wms(QUrl& url) {
 
 
   // return error messages as service exceptions
-  connect(&renderer.map, SIGNAL(errorOccured(const char *, const char *)), 
+  connect(&renderer.map, SIGNAL(errorMsg(const char *, const char *)), 
     this, SLOT(serviceException(const char *, const char *))); 
-  connect(&renderer, SIGNAL(errorOccured(const char *, const char *)), 
+  connect(&renderer, SIGNAL(errorMsg(const char *, const char *)), 
     this, SLOT(serviceException(const char *, const char *))); 
 
+  // log
+  connect(&renderer.map, SIGNAL(errorMsg(const char *, const char *)), 
+    this, SLOT(logMessage(const char *, const char *))); 
+  connect(&renderer, SIGNAL(errorMsg(const char *, const char *)), 
+    this, SLOT(logMessage(const char *, const char *))); 
 
   renderer.loadUrl(url);  
 }
@@ -45,7 +50,7 @@ void Wms::respond(FastCgiQt::Request* request) {
     ++it) {
 
     QString key = QString(it.key().toUpper());
-
+      
     if (key == "SERVICE") {
       p_service = it.value().toUpper();
     }
@@ -56,7 +61,8 @@ void Wms::respond(FastCgiQt::Request* request) {
       p_version = it.value();
     }
     else if (key == "FORMAT") {
-      p_format = it.value();
+      p_format = it.value().toLower();
+      qDebug() << p_format;
     }
   }
 
@@ -71,7 +77,7 @@ void Wms::respond(FastCgiQt::Request* request) {
 
   // dispatch requests
   if (p_request == "GETMAP") {
-    getMap();
+    getMap(p_format);
   }
 
   else if (p_request == "GETCAPABILITIES") {
@@ -93,6 +99,11 @@ void Wms::getCapabilities()
   QByteArray data;
   QTextStream out(&data);
   QString wmsurl = m_request->url(FastCgiQt::LocationUrl).toEncoded(); 
+
+  QString proj;
+  if (!renderer.map.getProjection(proj)) {
+    return;  
+  }
   
   //out << XML_HEADER << endl;
   out << "<WMT_MS_Capabilities version=\"1.1.1\">" << endl;
@@ -114,7 +125,6 @@ void Wms::getCapabilities()
   out << "</KeywordList>"
       << "</Service>"
       << endl;
-  out << renderer.map.getProjection() << endl;
 
   out << "<Capability>" 
       << "<Request>" 
@@ -123,7 +133,7 @@ void Wms::getCapabilities()
       << "<Format>" << MIMETYPE_GC << "</Format>" 
       << "<DCPType><HTTP><Get>"
       << "<OnlineResource " << XML_XLINK_NS
-      <<   " xlink:href=\"" << wmsurl << "?Service=WMS"
+      <<   " xlink:href=\"" << wmsurl << "?Service=WMS&amp;"
       <<   "\"/></Get></HTTP></DCPType>"
       << "</GetCapabilities>" 
       // GetMap
@@ -164,7 +174,7 @@ void Wms::getCapabilities()
 
   out << "<Layer>" 
       << "<Title>" << renderer.title() << "</Title>" 
-      << "<SRS>" << renderer.map.getProjection() << "</SRS>"; 
+      << "<SRS>" << proj << "</SRS>"; 
       //<LatLonBoundingBox minx="-179.992" miny="-90.008" maxx="180.008" maxy="89.992"/> 
    // layers
    /*
@@ -189,9 +199,9 @@ void Wms::getCapabilities()
 }
 
 
-void Wms::serviceException( const char *msgCode, const char *msgText)
+void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType type)
 {
-  // only output a SE if theres an actual request
+  // only output a SE if there is an request
   if (!m_request) { return;}
 
   QByteArray data;
@@ -214,39 +224,56 @@ void Wms::serviceException( const char *msgCode, const char *msgText)
 
 }
 
+void Wms::logMessage( const char *msgCode, const char *msgText, QtMsgType type) {
+  switch(type) {
+    case QtDebugMsg:
+      qDebug() << msgText;
+      break;
+    case QtCriticalMsg:
+      qCritical() << msgText;
+      break;
+    case QtFatalMsg:
+      qCritical() << msgText;
+      break;
+    case QtWarningMsg:
+      qWarning() << msgText;
+      break;
+  }
+}
 
-void Wms::getMap() {
-  try {
+void Wms::getMap( const QString &format) {
 
-    QByteArray bytes;
-    QBuffer buffer(&bytes); // write binary data
-    buffer.open(QIODevice::WriteOnly);
+  // check the validity of the input parameters
+  QByteArray renderformat;
+  QList<QByteArray> supported_formats = renderer.getImageFormats();
+  if (format == MIMETYPE_PNG) {
+    renderformat = "png";  
+  }
+  else if (format == MIMETYPE_JPG) {
+    renderformat = "jpeg";  
+  }
+  else if (format == MIMETYPE_TIF) {
+    renderformat = "tiff";  
+  };
 
-    renderer.render( buffer, "PNG");
+  if (renderformat.isEmpty() || !supported_formats.contains(renderformat.data())) {
+    serviceException(
+      "formatNotsupported",
+      "the specified imageformat is not supported");
+    return;
+  }
 
-    m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_PNG);
+
+  // render
+  QByteArray bytes;
+  QBuffer buffer(&bytes); // write binary data
+  buffer.open(QIODevice::WriteOnly);
+
+  if (renderer.render( buffer, renderformat.toUpper())) {
+
+    m_request->setHeader(HTTP_CONTENT_TYPE, format.toUtf8());
     QByteArray content_length = QByteArray::number(bytes.length());
     m_request->setHeader(HTTP_CONTENT_LEN, content_length );
     m_request->write(bytes);
-
   }
-  catch(int e) {
-
-    switch (e) {
-      case ERR_NO_LOAD_URL:
-        serviceException(
-          "noLoad", 
-          "Could not load the HTML file."
-        );  
-        return;        
-        break;
-      default:
-        serviceException(
-          "unknownError", 
-          "A unknown Error occured - great error message, isn't it?"
-        );  
-        return;           
-      }
-  }
-
 }

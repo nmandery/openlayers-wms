@@ -48,12 +48,19 @@ bool MapRenderer::refresh() {
   }
 
   if (!loaded) {
-    emit errorOccured("urlLoad", "Could not load the url ");
+    emit errorMsg("urlLoad", "Could not load the url ");
   }
   return loaded;
 }
   
-void MapRenderer::render(QBuffer & target, const char * format) {
+bool MapRenderer::render(QBuffer & target, const char *format) {
+
+  qDebug() << "rendering in " << format;
+
+  if (map.mainFrame()->contentsSize().isEmpty()) {
+    emit errorMsg("renderMap", "Image size is empty");
+    return false;  
+  }
 
   map.setViewportSize(map.mainFrame()->contentsSize());
 
@@ -68,6 +75,7 @@ void MapRenderer::render(QBuffer & target, const char * format) {
   painter.end();
 
   image.save(&target, format);
+  return true;
 }
 
 

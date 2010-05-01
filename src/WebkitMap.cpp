@@ -9,28 +9,27 @@ WebkitMap::WebkitMap() : QWebPage() {
   
 }
 
-const QString WebkitMap::getProjection() {
-  QString proj;
+bool WebkitMap::getProjection(QString &proj) {
+  bool success = false;
 
   QVariant jsres = mainFrame()->evaluateJavaScript("mapapi.getProjectionCode();");
-  qDebug() << jsres;
   if (!jsres.canConvert<QString>()) {
     qCritical() << "WebkitMap::getProjection() : cannot convert to string";  
   }
   else {
     proj = jsres.toString();
+    success = true;
   }
-  return proj;
+  return success;
 }
 
 
-QList<Layer> WebkitMap::getLayers() {
-  QList<Layer> layers;
+bool WebkitMap::getLayers(QList<Layer> &layers)  {
 
   QVariant jsres = mainFrame()->evaluateJavaScript("mapapi.getLayers();");
   qDebug() << jsres;
 
-  return layers;
+  return true;
 }
 
 
@@ -40,5 +39,5 @@ void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber,
   QString fullMessage = "JS Error in \"" % sourceID % "\" (line " % QString(lineNumber) % "): " % message;
   qCritical() << fullMessage; 
 
-  emit errorOccured("jsError", fullMessage.toAscii().data());
+  emit errorMsg("jsError", fullMessage.toAscii().data());
 }

@@ -8,9 +8,9 @@ class WebkitMap : public QWebPage {
 
   public:
     WebkitMap();
-    const QString getProjection();    
+    bool getProjection(QString &proj);    
 
-    QList<Layer> getLayers();
+    bool getLayers(QList<Layer> &layers);
     /*
     // info from metatags
     const QString getDescription();
@@ -24,7 +24,7 @@ class WebkitMap : public QWebPage {
     */
 
   signals:
-    void errorOccured(const char * msgCode ,const char * msgText);
+    void errorMsg(const char * msgCode ,const char * msgText);
 
   protected:
     void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
