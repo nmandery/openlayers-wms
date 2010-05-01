@@ -37,7 +37,7 @@ QList<Layer> WebkitMap::getLayers() {
 
 
 void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
-  QString fullMessage = "JS Error in " % sourceID % " (line " % QString(lineNumber) % "): " % message;
+  QString fullMessage = "JS Error in \"" % sourceID % "\" (line " % QString(lineNumber) % "): " % message;
   qCritical() << fullMessage; 
 
   emit errorOccured("jsError", fullMessage.toAscii().data());

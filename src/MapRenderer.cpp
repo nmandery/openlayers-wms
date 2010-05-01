@@ -12,6 +12,7 @@ MapRenderer::MapRenderer() {
   map.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
   timeout = 0;
+  loaded = false;  
 }
 
 const QString MapRenderer::title() {
@@ -20,7 +21,7 @@ const QString MapRenderer::title() {
 
 void MapRenderer::setLoadingFinished(bool success) {
   loading_finished = true;
-  loading_success = success;  
+  loaded = success;  
 }
 
 
@@ -28,9 +29,16 @@ void MapRenderer::setLoadingStarted() {
   loading_finished = false;
 }
 
+bool MapRenderer::hasLoaded() {
+  return loaded;
+}
 
-void MapRenderer::loadUrl(QUrl &url) {
+bool MapRenderer::loadUrl(QUrl &iurl) {
+  url = iurl;
+  return refresh();
+}
 
+bool MapRenderer::refresh() {
   map.mainFrame()->load(url); 
   while (!loading_finished) {
 
@@ -39,9 +47,10 @@ void MapRenderer::loadUrl(QUrl &url) {
     QApplication::instance()->processEvents(QEventLoop::AllEvents, 10);
   }
 
-  if (!loading_success) {
-    throw(ERR_NO_LOAD_URL);   
+  if (!loaded) {
+    emit errorOccured("urlLoad", "Could not load the url ");
   }
+  return loaded;
 }
   
 void MapRenderer::render(QBuffer & target, const char * format) {

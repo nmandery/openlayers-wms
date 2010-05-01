@@ -7,18 +7,27 @@
 Wms::Wms(QUrl& url) {
   
   qDebug("initializing OpenlayerWMS instance");
-  renderer.loadUrl(url);  
 
 
   // return error messages as service exceptions
-  //connect(renderer.map, SIGNAL(errorOccured(const char *, const char *)), 
-  //  this, SLOT(serviceException(const char *, const char *))); 
+  connect(&renderer.map, SIGNAL(errorOccured(const char *, const char *)), 
+    this, SLOT(serviceException(const char *, const char *))); 
+  connect(&renderer, SIGNAL(errorOccured(const char *, const char *)), 
+    this, SLOT(serviceException(const char *, const char *))); 
+
+
+  renderer.loadUrl(url);  
 }
 
 
 void Wms::respond(FastCgiQt::Request* request) {
 
   m_request = request;
+
+  // try to reload the page if it failed previously
+  if (!renderer.hasLoaded()) {
+    renderer.refresh();
+  }
 
   QString p_service;
   QString p_request;
@@ -182,11 +191,13 @@ void Wms::getCapabilities()
 
 void Wms::serviceException( const char *msgCode, const char *msgText)
 {
-  
+  // only output a SE if theres an actual request
+  if (!m_request) { return;}
+
   QByteArray data;
   QTextStream out(&data);
 
-  out << XML_HEADER << endl;
+  //out << XML_HEADER << endl;
   out << "<ServiceExceptionReport version=\"1.1.1\">"
       << "<ServiceException code=\"" << msgCode << "\">\n"
       << msgText << "\n"
