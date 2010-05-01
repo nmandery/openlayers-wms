@@ -8,6 +8,11 @@ Wms::Wms(QUrl& url) {
   
   qDebug("initializing OpenlayerWMS instance");
   renderer.loadUrl(url);  
+
+
+  // return error messages as service exceptions
+  //connect(renderer.map, SIGNAL(errorOccured(const char *, const char *)), 
+  //  this, SLOT(serviceException(const char *, const char *))); 
 }
 
 
@@ -78,9 +83,9 @@ void Wms::getCapabilities()
 {
   QByteArray data;
   QTextStream out(&data);
-
+  QString wmsurl = m_request->url(FastCgiQt::LocationUrl).toEncoded(); 
   
-  out << XML_HEADER << endl;
+  //out << XML_HEADER << endl;
   out << "<WMT_MS_Capabilities version=\"1.1.1\">" << endl;
 
   // service info
@@ -88,26 +93,87 @@ void Wms::getCapabilities()
   out << "<Service>"
       << "<Name>OGC:WMS</Name>"
       << "<Title>" << renderer.title() << "</Title>"
-      << "<OnlineResource xlink:href=\"" << m_request->url(FastCgiQt::LocationUrl).toEncoded() << "\"/>"
+      << "<Abstract/>"
+      << "<OnlineResource " << XML_XLINK_NS << " xlink:href=\"" << wmsurl << "\"/>"
+      << "<ContactInformation/>"
+      << "<Fees/>"
+      << "<AccessConstraints/>"
+      << "<KeywordList>";
+  
+  out << "<Keyword>" << "</Keyword>"; // TODO
+
+  out << "</KeywordList>"
       << "</Service>"
       << endl;
   out << renderer.map.getProjection() << endl;
 
+  out << "<Capability>" 
+      << "<Request>" 
+      // GetCapabilities
+      << "<GetCapabilities>" 
+      << "<Format>" << MIMETYPE_GC << "</Format>" 
+      << "<DCPType><HTTP><Get>"
+      << "<OnlineResource " << XML_XLINK_NS
+      <<   " xlink:href=\"" << wmsurl << "?Service=WMS"
+      <<   "\"/></Get></HTTP></DCPType>"
+      << "</GetCapabilities>" 
+      // GetMap
+      << "<GetMap>";
+
   // image formats
-  
   QList<QByteArray> formats = renderer.getImageFormats();
   for (QList<QByteArray>::ConstIterator fit = formats.constBegin();
     fit != formats.constEnd();
     ++fit) {
     QByteArray fb = *fit;
-    out << "<Format>" << QString(fb) << "</Format>";  
-  }
+    QString outf;
 
-  out << "</WMT_MS_Capabilities>" << endl;
+    // ony return a few formats we want to support
+    if (fb == "png") {
+      outf = MIMETYPE_PNG;
+    }
+    else if (fb == "jpg") {
+      outf = MIMETYPE_JPG;
+    }
+    else if (fb == "tiff") {
+      outf = MIMETYPE_TIF;
+    }
+
+    if (!outf.isEmpty()) {
+      out << "<Format>" << QString(outf) << "</Format>";  
+    }
+  }
+  
+  out << "<DCPType><HTTP><Get>" 
+      << "<OnlineResource " << XML_XLINK_NS
+      <<  " xlink:href=\"" << wmsurl << "?SERVICE=WMS&amp;\"/>"
+      << "</Get></HTTP></DCPType>"
+      << "</GetMap>"
+      << "</Request>"; 
+
+  out << "<Exception><Format>" << MIMETYPE_SE << "</Format></Exception>";
+
+  out << "<Layer>" 
+      << "<Title>" << renderer.title() << "</Title>" 
+      << "<SRS>" << renderer.map.getProjection() << "</SRS>"; 
+      //<LatLonBoundingBox minx="-179.992" miny="-90.008" maxx="180.008" maxy="89.992"/> 
+   // layers
+   /*
+      <Layer queryable="1"> 
+        <Name>ne2:10m_admin0_boundary_lines_land</Name> 
+        <Title>NE2 Admin 0 Boundary Lines Land (1:10000000)</Title> 
+        <SRS>EPSG:4326</SRS> 
+        <LatLonBoundingBox minx="-141.006" miny="-55.121" maxx="140.978" maxy="70.075"/> 
+        <BoundingBox SRS="EPSG:4326" minx="-141.006" miny="-55.121" maxx="140.978" maxy="70.075"/> 
+      </Layer> 
+  */
+  out << "</Layer>"
+      << "</Capability>"
+      << "</WMT_MS_Capabilities>" << endl;
 
   out.flush();
 
-  m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_XML);
+  m_request->setHeader(HTTP_CONTENT_TYPE, MIMETYPE_GC);
   QByteArray content_length = QByteArray::number(data.length());
   m_request->setHeader(HTTP_CONTENT_LEN, content_length );
   m_request->write(data);
