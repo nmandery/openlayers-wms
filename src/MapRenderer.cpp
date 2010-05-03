@@ -15,9 +15,13 @@ MapRenderer::MapRenderer() {
   loaded = false;  
 }
 
+
+
 const QString MapRenderer::title() {
   return map.mainFrame()->title();  
 }
+
+
 
 void MapRenderer::setLoadingFinished(bool success) {
   loading_finished = true;
@@ -25,18 +29,25 @@ void MapRenderer::setLoadingFinished(bool success) {
 }
 
 
+
 void MapRenderer::setLoadingStarted() {
   loading_finished = false;
 }
+
+
 
 bool MapRenderer::hasLoaded() {
   return loaded;
 }
 
+
+
 bool MapRenderer::loadUrl(QUrl &iurl) {
   url = iurl;
   return refresh();
 }
+
+
 
 bool MapRenderer::refresh() {
   map.mainFrame()->load(url); 
@@ -47,24 +58,30 @@ bool MapRenderer::refresh() {
     QApplication::instance()->processEvents(QEventLoop::AllEvents, 10);
   }
 
+  qDebug() << "finished loading page";
+
   if (!loaded) {
     emit errorMsg("urlLoad", "Could not load the url ");
   }
   return loaded;
 }
-  
-bool MapRenderer::render(QBuffer & target, const char *format) {
 
-  qDebug() << "rendering in " << format;
 
-  if (map.mainFrame()->contentsSize().isEmpty()) {
+
+bool MapRenderer::render(QBuffer & target, const char *format, const QSize &image_size) {
+
+  qDebug() << "rendering in " << format << " and size " << image_size;
+
+  if (image_size.isEmpty()) {
     emit errorMsg("renderMap", "Image size is empty");
     return false;  
   }
 
-  map.setViewportSize(map.mainFrame()->contentsSize());
+  map.setViewportSize(image_size);
+  map.resizeMap(image_size);
+  // TODO: wait till loaded
 
-  QImage image(map.mainFrame()->contentsSize(), QImage::Format_ARGB32_Premultiplied);
+  QImage image(image_size, QImage::Format_ARGB32_Premultiplied);
   image.fill(Qt::transparent);
 
   QPainter painter(&image);

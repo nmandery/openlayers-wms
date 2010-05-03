@@ -40,8 +40,8 @@ void Wms::respond(FastCgiQt::Request* request) {
   QString p_format;
   QString p_srs;
   QString p_bbox;
-  QString p_width;
-  QString p_height;
+  int p_width = 0;
+  int p_height = 0;
 
   // get all variables from the query string
   QHash<QByteArray, QByteArray> p_getVars = request->rawValues(FastCgiQt::GetData);
@@ -62,7 +62,28 @@ void Wms::respond(FastCgiQt::Request* request) {
     }
     else if (key == "FORMAT") {
       p_format = it.value().toLower();
-      qDebug() << p_format;
+    }
+    else if (key == "WIDTH") {
+      bool conv_result;
+      p_width = it.value().toInt(&conv_result);
+      if (!conv_result) {
+        serviceException(
+         "paramError",
+         "Illegal value for WIDTH"
+         );  
+        return; 
+      }
+    }
+    else if (key == "HEIGHT") {
+      bool conv_result;
+      p_height = it.value().toInt(&conv_result);
+      if (!conv_result) {
+        serviceException(
+         "paramError",
+         "Illegal value for HEIGHT"
+         );  
+        return; 
+      }
     }
   }
 
@@ -77,7 +98,8 @@ void Wms::respond(FastCgiQt::Request* request) {
 
   // dispatch requests
   if (p_request == "GETMAP") {
-    getMap(p_format);
+    QSize image_size(p_width, p_height); 
+    getMap(p_format, image_size);
   }
 
   else if (p_request == "GETCAPABILITIES") {
@@ -241,18 +263,18 @@ void Wms::logMessage( const char *msgCode, const char *msgText, QtMsgType type) 
   }
 }
 
-void Wms::getMap( const QString &format) {
+void Wms::getMap( const QString &image_format, const QSize &image_size) {
 
   // check the validity of the input parameters
   QByteArray renderformat;
   QList<QByteArray> supported_formats = renderer.getImageFormats();
-  if (format == MIMETYPE_PNG) {
+  if (image_format == MIMETYPE_PNG) {
     renderformat = "png";  
   }
-  else if (format == MIMETYPE_JPG) {
+  else if (image_format == MIMETYPE_JPG) {
     renderformat = "jpeg";  
   }
-  else if (format == MIMETYPE_TIF) {
+  else if (image_format == MIMETYPE_TIF) {
     renderformat = "tiff";  
   };
 
@@ -269,9 +291,9 @@ void Wms::getMap( const QString &format) {
   QBuffer buffer(&bytes); // write binary data
   buffer.open(QIODevice::WriteOnly);
 
-  if (renderer.render( buffer, renderformat.toUpper())) {
+  if (renderer.render( buffer, renderformat.toUpper(), image_size)) {
 
-    m_request->setHeader(HTTP_CONTENT_TYPE, format.toUtf8());
+    m_request->setHeader(HTTP_CONTENT_TYPE, image_format.toUtf8());
     QByteArray content_length = QByteArray::number(bytes.length());
     m_request->setHeader(HTTP_CONTENT_LEN, content_length );
     m_request->write(bytes);

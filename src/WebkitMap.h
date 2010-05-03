@@ -8,6 +8,7 @@ class WebkitMap : public QWebPage {
 
   public:
     WebkitMap();
+    bool resizeMap(const QSize &size);
     bool getProjection(QString &proj);    
 
     bool getLayers(QList<Layer> &layers);

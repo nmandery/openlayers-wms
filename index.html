@@ -54,6 +54,15 @@ JsWmsAPI = function () {
 
   this.title = function() { return document.title;};
 
+  this.resize = function( width, height ) {
+    document.body.style.width = width;
+    map.div.style.width = width;
+    document.body.style.height = height;
+    map.div.style.height = height;
+    
+    map.updateSize();
+  };
+
   this.getProjectionCode = function() {
     if (typeof map.displayProjection === 'undefined') {
       return map.projection.projCode;  
@@ -117,8 +126,10 @@ JSON.stringify()
     </script>
 </head>
  
-<body onload="init();" style="padding:0px; margin:0px; width:400px; height:400px;">
-    <div style="width:100%; height:100%; margin:0px; padding:0px;" id="map"></div>
+<body onload="init();" style="padding:0px; margin:0px; width:100px; height:100px; background:#ff0000;">
+    <div style="margin:0px; padding:0px; background:#00ff00;" id="map"></div>
+  <!--<div style="width:100%; height:100%; margin:0px; padding:0px; background:#00ff00;" id="map"></div>
+  -->
 </body>
 
 </html>

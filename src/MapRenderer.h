@@ -16,7 +16,7 @@ class MapRenderer : public QObject {
     bool refresh();
     void setTimeout(int seconds); 
     int getTimeout();
-    bool render(QBuffer & target, const char *format);
+    bool render(QBuffer & target, const char *format, const QSize &image_size);
     const QString title();
     QList<QByteArray> getImageFormats();
     bool hasLoaded();

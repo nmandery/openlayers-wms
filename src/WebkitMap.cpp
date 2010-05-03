@@ -9,6 +9,19 @@ WebkitMap::WebkitMap() : QWebPage() {
   
 }
 
+
+bool WebkitMap::resizeMap(const QSize &size) {
+  // TODO: error handling
+  
+  mainFrame()->evaluateJavaScript(
+    "mapapi.resize(" % 
+      QString::number(size.width()) % ", " % 
+      QString::number(size.height()) % ")");
+
+  // TODO: wait till resize is finished
+  return true;
+}
+
 bool WebkitMap::getProjection(QString &proj) {
   bool success = false;
 
@@ -36,8 +49,11 @@ bool WebkitMap::getLayers(QList<Layer> &layers)  {
 
 
 void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
-  QString fullMessage = "JS Error in \"" % sourceID % "\" (line " % QString(lineNumber) % "): " % message;
-  qCritical() << fullMessage; 
+  QString fullMessage = 
+    "JS Error in \"" % sourceID % 
+    "\" (line " % QString::number(lineNumber) % "): " % message;
+
+  //qCritical() << fullMessage; 
 
   emit errorMsg("jsError", fullMessage.toAscii().data());
 }
