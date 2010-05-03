@@ -30,12 +30,17 @@ class Wms : public QObject {
     void respond(FastCgiQt::Request*);
 
   protected slots:
-		void serviceException(const char* msgCode, const char* msgText, QtMsgType type = QtCriticalMsg);
-		void logMessage(const char* msgCode, const char* msgText, QtMsgType type = QtCriticalMsg);
+		void serviceException(const char* msgCode, 
+              const char* msgText, 
+              QtMsgType type = QtCriticalMsg);
+		void logMessage(const char* msgCode, 
+              const char* msgText, 
+              QtMsgType type = QtCriticalMsg);
 
   private:
 		void getCapabilities();
-		void getMap(const QString &image_format, const QSize &image_size);
+		void getMap(const QString &image_format, 
+              const QSize &image_size);
     MapRenderer renderer;
     FastCgiQt::Request* m_request;
 

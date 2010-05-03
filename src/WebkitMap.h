@@ -28,5 +28,7 @@ class WebkitMap : public QWebPage {
     void errorMsg(const char * msgCode ,const char * msgText);
 
   protected:
-    void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+    void javaScriptConsoleMessage(const QString &message,
+                int lineNumber, 
+                const QString &sourceID);
 };
