@@ -45,15 +45,22 @@ bool MapRenderer::hasLoaded() {
 
 
 
-bool MapRenderer::loadUrl(QUrl &iurl) {
-  url = iurl;
+bool MapRenderer::load(QString &ifile) {
+  file = ifile;
   return refresh();
 }
 
 
 
 bool MapRenderer::refresh() {
-  map.mainFrame()->load(url); 
+  QFileInfo fi(file);
+  if ( fi.exists() ) {
+    map.mainFrame()->load(QUrl("file://" + fi.absoluteFilePath())); 
+  }
+  else {
+    map.mainFrame()->load(QUrl(file)); 
+  }
+
   while (!loading_finished) {
 
     // TODO: handle timeouts  

@@ -4,7 +4,7 @@
 
 
 
-Wms::Wms(QUrl& url) {
+Wms::Wms(QString& file) {
   
   qDebug("initializing OpenlayerWMS instance");
 
@@ -21,7 +21,7 @@ Wms::Wms(QUrl& url) {
   connect(&renderer, SIGNAL(errorMsg(const char *, const char *)), 
     this, SLOT(logMessage(const char *, const char *))); 
 
-  renderer.loadUrl(url);  
+  renderer.load(file);  
 }
 
 

@@ -12,7 +12,7 @@ class MapRenderer : public QObject {
     //MapRenderer(QObject *parent = 0) { /* TODO*/ };
     MapRenderer();
     WebkitMap map;
-    bool loadUrl(QUrl & url);
+    bool load(QString &file);
     bool refresh();
     void setTimeout(int seconds); 
     int getTimeout();
@@ -35,6 +35,6 @@ class MapRenderer : public QObject {
     int timeout;
     bool loading_finished;
     bool loaded;
-    QUrl url;
+    QString file;
 };
 

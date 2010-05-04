@@ -14,7 +14,7 @@ bool WebkitMap::resizeMap(const QSize &size) {
   // TODO: error handling
   
   mainFrame()->evaluateJavaScript(
-    "mapapi.resize(" % 
+    "map.doResize(" % 
       QString::number(size.width()) % ", " % 
       QString::number(size.height()) % ")");
 
@@ -25,7 +25,7 @@ bool WebkitMap::resizeMap(const QSize &size) {
 bool WebkitMap::getProjection(QString &proj) {
   bool success = false;
 
-  QVariant jsres = mainFrame()->evaluateJavaScript("mapapi.getProjectionCode();");
+  QVariant jsres = mainFrame()->evaluateJavaScript("map.getProjectionCode();");
   if (!jsres.canConvert<QString>()) {
     qCritical() << "WebkitMap::getProjection() : cannot convert to string";  
   }
@@ -39,7 +39,7 @@ bool WebkitMap::getProjection(QString &proj) {
 
 bool WebkitMap::getLayers(QList<Layer> &layers)  {
 
-  QVariant jsres = mainFrame()->evaluateJavaScript("mapapi.getLayers();");
+  QVariant jsres = mainFrame()->evaluateJavaScript("map.getLayers();");
   qDebug() << jsres;
 
   return true;

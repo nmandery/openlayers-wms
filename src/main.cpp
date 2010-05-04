@@ -1,8 +1,7 @@
-#include "Wms.h"
 #include <FastCgiQt/Manager.h>
+#include <QApplication> // we need a GUI application to run webkit
 
-// we need a GUI application to run webkit
-#include <QApplication>
+#include "Wms.h"
 
 #define APP_NAME "OpenlayersWMS"
 
@@ -30,10 +29,10 @@ int main(int argc, char** argv) {
 	QApplication application(argc, argv);
 	application.setApplicationName(APP_NAME);
 
-  QUrl url("http://localhost/osm.html");
+  QString file("../html/unitr.html");
 
 	FastCgiQt::Manager manager;
-  Wms responder(url);
+  Wms responder(file);
 
   responder.connect(
       &manager,

@@ -24,7 +24,7 @@ class Wms : public QObject {
 	Q_OBJECT;
 
   public:
-    Wms(QUrl&);
+    Wms(QString&);
 
   public slots:
     void respond(FastCgiQt::Request*);
