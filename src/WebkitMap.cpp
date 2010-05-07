@@ -37,14 +37,70 @@ bool WebkitMap::getProjection(QString &proj) {
 }
 
 
-bool WebkitMap::getLayers(QList<Layer> &layers)  {
+bool WebkitMap::getLayerList(QList<Layer> &layers)  {
+  bool success = false;
 
-  QVariant jsres = mainFrame()->evaluateJavaScript("map.getLayers();");
+  QVariant jsres = mainFrame()->evaluateJavaScript("map.getLayerList();");
   qDebug() << jsres;
+  if (!jsres.canConvert<QVariantMap>()) {
+    qCritical() << "WebkitMap::getLayerList) : cannot convert to QVariantMap";  
+  }
+  else {
+      QVariantMap lmap = jsres.toMap();
+      
+      // loop over layerlist
+      for (QVariantMap::ConstIterator layer_variant = lmap.constBegin();
+                layer_variant != lmap.constEnd();
+                ++layer_variant) {
+        Layer layer;
 
-  return true;
+        qDebug() << "Found layer named " << layer_variant.key();
+        layer.name = layer_variant.key();
+
+        if (layer_variant.value().canConvert<QVariantMap>()) {
+
+          QVariantMap layer_props = layer_variant.value().toMap();
+
+          // get title of the layer
+          if (layer_props.contains(QString("title"))) {
+            layer.title = layer_props.value(QString("title")).toString();
+            qDebug() << layer_props.value(QString("title"));
+          }
+
+          // get bbox of the layer
+          if (layer_props.contains(QString("extent"))) {
+            QVariantList bbox_variants = layer_props.value(QString("extent")).toList();
+            if (bbox_variants.size() == 4) {
+
+              // TODO: check coordinates
+              layer.bbox.left   = bbox_variants.at(0).toDouble();
+              layer.bbox.top    = bbox_variants.at(1).toDouble();
+              layer.bbox.right  = bbox_variants.at(2).toDouble();
+              layer.bbox.bottom = bbox_variants.at(3).toDouble();
+
+            }
+            else {
+              qWarning()  << "Can not convert the BBox of layer " << layer.name
+                          << ". It contains " << bbox_variants.size() << " elements instead of 4.";
+            }
+          }
+          else {
+            qWarning() << "Layer " << layer.name << " has no BBox defined";  
+          }
+        }
+        else {
+          qWarning()  << "Can not read properties of layer " << layer.name 
+                      << ". Ignoring this one";
+        }
+
+        // add to layerlist
+        layers.append(layer);
+      }
+      success = true;
+  }
+
+  return success;
 }
-
 
 
 

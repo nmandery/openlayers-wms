@@ -126,9 +126,14 @@ void Wms::getCapabilities()
   if (!renderer.map.getProjection(proj)) {
     return;  
   }
-  
+ 
+  QList<Layer> layers;
+  if (!renderer.map.getLayerList(layers)) {
+    return;
+  };
+
   //out << XML_HEADER << endl;
-  out << "<WMT_MS_Capabilities version=\"1.1.1\">" << endl;
+  out << "<WMT_MS_Capabilities version=\"1.1.1\">";
 
   // service info
 
@@ -145,8 +150,7 @@ void Wms::getCapabilities()
   out << "<Keyword>" << "</Keyword>"; // TODO
 
   out << "</KeywordList>"
-      << "</Service>"
-      << endl;
+      << "</Service>";
 
   out << "<Capability>" 
       << "<Request>" 
@@ -199,6 +203,26 @@ void Wms::getCapabilities()
       << "<SRS>" << proj << "</SRS>"; 
       //<LatLonBoundingBox minx="-179.992" miny="-90.008" maxx="180.008" maxy="89.992"/> 
    // layers
+
+  for (QList<Layer>::ConstIterator layer_it = layers.constBegin();
+              layer_it != layers.constEnd();
+              ++layer_it) {
+    Layer layer = *layer_it;
+
+    out << "<Layer queryable=\"0\">" 
+        << "<Name>" << layer.name << "</Name>"
+        << "<Title>" << layer.title << "</Title>"
+        << "<SRS>" << proj << "</SRS>";
+
+    
+    out << "<LatLonBoundingBox minx=\"" << layer.bbox.left << "\" miny=\""
+        << layer.bbox.bottom << "\" maxx=\"" << layer.bbox.right 
+        << "\" maxy=\"" << layer.bbox.top << "\"/>" 
+        << "<BoundingBox SRS=\"" << proj << "\" minx=\"" << layer.bbox.left 
+        << "\" miny=\"" << layer.bbox.bottom << "\" maxx=\"" 
+        << layer.bbox.right << "\" maxy=\"" << layer.bbox.top << "\"/>"; 
+
+    out << "</Layer>";
    /*
       <Layer queryable="1"> 
         <Name>ne2:10m_admin0_boundary_lines_land</Name> 
@@ -208,9 +232,11 @@ void Wms::getCapabilities()
         <BoundingBox SRS="EPSG:4326" minx="-141.006" miny="-55.121" maxx="140.978" maxy="70.075"/> 
       </Layer> 
   */
+  }
+
   out << "</Layer>"
       << "</Capability>"
-      << "</WMT_MS_Capabilities>" << endl;
+      << "</WMT_MS_Capabilities>";
 
   out.flush();
 

@@ -1,5 +1,6 @@
 #include <FastCgiQt/Request.h>
 #include "MapRenderer.h"
+#include "Layer.h"
 
 
 #define XML_HEADER "<?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>"

@@ -11,7 +11,7 @@ class WebkitMap : public QWebPage {
     bool resizeMap(const QSize &size);
     bool getProjection(QString &proj);    
 
-    bool getLayers(QList<Layer> &layers);
+    bool getLayerList(QList<Layer> &layers);
     /*
     // info from metatags
     const QString getDescription();
