@@ -1,8 +1,9 @@
 OpenLayers.WmsMap = OpenLayers.Class(OpenLayers.Map, {
   
-  getTitle: function() { return document.title;},
+  getTitle: function() { 
+    return document.title;
+  },
 
-  
   doResize: function( width, height ) {
     document.body.style.width = width;
     map.div.style.width = width;
@@ -38,6 +39,10 @@ OpenLayers.WmsMap = OpenLayers.Class(OpenLayers.Map, {
       }
     }
     return layerlist;
+  },
+
+  hasLayer: function(layername) {
+    return map.layers[layername] !== "undefined" && map.layers[layername] != null;
   },
 
   CLASS_NAME: "OpenLayers.JsWmsApi"

@@ -41,6 +41,7 @@ class Wms : public QObject {
   private:
 		void getCapabilities();
 		void getMap(const QString &image_format, 
+              const QString &layer,
               const QSize &image_size);
     MapRenderer renderer;
     FastCgiQt::Request* m_request;

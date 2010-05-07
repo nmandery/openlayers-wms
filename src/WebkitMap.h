@@ -10,6 +10,7 @@ class WebkitMap : public QWebPage {
     WebkitMap();
     bool resizeMap(const QSize &size);
     bool getProjection(QString &proj);    
+    bool hasLayer(const QString &layername);
 
     bool getLayerList(QList<Layer> &layers);
     /*
@@ -17,11 +18,6 @@ class WebkitMap : public QWebPage {
     const QString getDescription();
     const QString getAuthor();
     const QSet<QString> getKeywords();
-    */
-
-    /*
-    // info collected by javascript calls
-    const QSet<Layer> getLayers();
     */
 
   signals:

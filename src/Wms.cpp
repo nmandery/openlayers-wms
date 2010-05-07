@@ -38,6 +38,7 @@ void Wms::respond(FastCgiQt::Request* request) {
   QString p_request;
   QString p_version;
   QString p_format;
+  QString p_layers;
   QString p_srs;
   QString p_bbox;
   int p_width = 0;
@@ -62,6 +63,9 @@ void Wms::respond(FastCgiQt::Request* request) {
     }
     else if (key == "FORMAT") {
       p_format = it.value().toLower();
+    }
+    else if (key == "LAYERS") {
+      p_layers = it.value();
     }
     else if (key == "WIDTH") {
       bool conv_result;
@@ -99,7 +103,7 @@ void Wms::respond(FastCgiQt::Request* request) {
   // dispatch requests
   if (p_request == "GETMAP") {
     QSize image_size(p_width, p_height); 
-    getMap(p_format, image_size);
+    getMap(p_format, p_layers, image_size);
   }
 
   else if (p_request == "GETCAPABILITIES") {
@@ -154,7 +158,6 @@ void Wms::getCapabilities()
 
   out << "<Capability>" 
       << "<Request>" 
-      // GetCapabilities
       << "<GetCapabilities>" 
       << "<Format>" << MIMETYPE_GC << "</Format>" 
       << "<DCPType><HTTP><Get>"
@@ -162,7 +165,6 @@ void Wms::getCapabilities()
       <<   " xlink:href=\"" << wmsurl << "?Service=WMS&amp;"
       <<   "\"/></Get></HTTP></DCPType>"
       << "</GetCapabilities>" 
-      // GetMap
       << "<GetMap>";
 
   // image formats
@@ -202,6 +204,7 @@ void Wms::getCapabilities()
       << "<Title>" << renderer.title() << "</Title>" 
       << "<SRS>" << proj << "</SRS>"; 
       //<LatLonBoundingBox minx="-179.992" miny="-90.008" maxx="180.008" maxy="89.992"/> 
+      //
    // layers
 
   for (QList<Layer>::ConstIterator layer_it = layers.constBegin();
@@ -289,9 +292,36 @@ void Wms::logMessage( const char *msgCode, const char *msgText, QtMsgType type) 
   }
 }
 
-void Wms::getMap( const QString &image_format, const QSize &image_size) {
+void Wms::getMap( const QString &image_format, const QString &layers, const QSize &image_size) {
 
   // check the validity of the input parameters
+  
+  // layers
+  if (layers.isEmpty()) {
+    serviceException(
+      "noLayers",
+      "no layers specified");
+    return;
+  }
+  QStringList layer_names = layers.split(",");
+  QStringList layer_names_cleaned;
+  for (int i=0; i<layer_names.size(); ++i) {
+    QString layer_name = layer_names.at(i).trimmed();
+    
+    if (!layer_name.isEmpty()) {
+      if (renderer.map.hasLayer(layer_name)) {
+        layer_names_cleaned.append(layer_name);  
+      }
+      else {
+        serviceException(
+          "layerDoesNotExist",
+          "one of the layers does not exist");
+        return;       
+      }
+    }
+  }
+
+  // format
   QByteArray renderformat;
   QList<QByteArray> supported_formats = renderer.getImageFormats();
   if (image_format == MIMETYPE_PNG) {
@@ -307,7 +337,7 @@ void Wms::getMap( const QString &image_format, const QSize &image_size) {
   if (renderformat.isEmpty() || !supported_formats.contains(renderformat.data())) {
     serviceException(
       "formatNotsupported",
-      "the specified imageformat is not supported");
+      "the imageformat is not supported");
     return;
   }
 

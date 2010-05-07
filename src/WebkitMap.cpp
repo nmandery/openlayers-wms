@@ -98,11 +98,19 @@ bool WebkitMap::getLayerList(QList<Layer> &layers)  {
       }
       success = true;
   }
-
   return success;
 }
 
 
+bool WebkitMap::hasLayer(const QString &layername) {
+  int success = false;
+
+  QVariant jsres = mainFrame()->evaluateJavaScript("map.hasLayer(\"" % layername % "\");");
+  qDebug() << "hasLayer(" << layername << ") --> " << jsres;
+  success = jsres.toBool();
+
+  return success;
+}
 
 void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
   QString fullMessage = 
