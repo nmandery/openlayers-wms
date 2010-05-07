@@ -354,4 +354,10 @@ void Wms::getMap( const QString &image_format, const QString &layers, const QSiz
     m_request->setHeader(HTTP_CONTENT_LEN, content_length );
     m_request->write(bytes);
   }
+  else {
+    serviceException(
+      "renderError",
+      "could not render the image - this should realy not happen, sorry");
+    return;
+  }
 }
