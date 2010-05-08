@@ -3,7 +3,8 @@
 #include "WebkitMap.h"
 
 
-#define ERR_NO_LOAD_URL 1
+#ifndef CLASS_MAPRENDERER_H
+#define CLASS_MAPRENDERER_H
 
 class MapRenderer : public QObject {
   Q_OBJECT;
@@ -11,7 +12,10 @@ class MapRenderer : public QObject {
   public:
     //MapRenderer(QObject *parent = 0) { /* TODO*/ };
     MapRenderer();
+
+    /// the WebkitMap instance
     WebkitMap map;
+
     bool load(QString &file);
     bool refresh();
     void setTimeout(int seconds); 
@@ -20,8 +24,13 @@ class MapRenderer : public QObject {
     bool render(QBuffer & target,
                 const char *format, 
                 const QSize &image_size);
+
+    /// get the title of the map
     const QString title();
+
+    /// the list of supported image formats
     QList<QByteArray> getImageFormats();
+
     bool hasLoaded();
 
   signals:
@@ -38,3 +47,4 @@ class MapRenderer : public QObject {
     QString file;
 };
 
+#endif

@@ -21,6 +21,9 @@
 #define HTTP_CONTENT_LEN "Content-Length"
 
 
+#ifndef CLASS_WMS_H
+#define CLASS_WMS_H
+
 class Wms : public QObject {
 	Q_OBJECT;
 
@@ -28,22 +31,45 @@ class Wms : public QObject {
     Wms(QString&);
 
   public slots:
+    /**
+     * respond to an incoming http request
+     *
+     * this method does the request dispatching and forwards
+     * requests to the corresponding methods
+     *   - getMap
+     *   - getCapabilites
+     *   - serviceException
+     */
     void respond(FastCgiQt::Request*);
 
   protected slots:
+    /// return a service exception to the client
 		void serviceException(const char* msgCode, 
               const char* msgText, 
               QtMsgType type = QtCriticalMsg);
+
+    /// log errors
 		void logMessage(const char* msgCode, 
               const char* msgText, 
               QtMsgType type = QtCriticalMsg);
 
   private:
+    /**
+     * return a GetCapabilities response 
+     * gets called from respond 
+     */
 		void getCapabilities();
+
+    /// render a map
 		void getMap(const QString &image_format, 
               const QString &layer,
               const QSize &image_size);
+
     MapRenderer renderer;
+
+    /// the request object of the current request
     FastCgiQt::Request* m_request;
 
 };
+
+#endif
