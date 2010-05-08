@@ -1,6 +1,6 @@
+#ifndef STRUCT_LAYER_H
+#define STRUCT_LAYER_H
 
-#ifndef STRUCT_BBOX_H
-#define STRUCT_BBOX_H
 
 typedef struct {
   double left;
@@ -9,12 +9,7 @@ typedef struct {
   double bottom;
 } BBox;
 
-#endif
 
-
-
-#ifndef STRUCT_LAYER_H
-#define STRUCT_LAYER_H
 
 typedef struct {
   QString name;

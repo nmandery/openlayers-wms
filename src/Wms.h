@@ -1,3 +1,7 @@
+#ifndef CLASS_WMS_H
+#define CLASS_WMS_H
+
+
 #include <FastCgiQt/Request.h>
 #include "MapRenderer.h"
 #include "Layer.h"
@@ -20,9 +24,6 @@
 #define HTTP_CONTENT_TYPE "Content-Type"
 #define HTTP_CONTENT_LEN "Content-Length"
 
-
-#ifndef CLASS_WMS_H
-#define CLASS_WMS_H
 
 class Wms : public QObject {
 	Q_OBJECT;

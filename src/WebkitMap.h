@@ -1,9 +1,10 @@
+#ifndef CLASS_WEBKITMAP_H
+#define CLASS_WEBKITMAP_H
+
+
 #include <QtWebKit/QtWebKit>
 #include <QStringBuilder>
 #include "Layer.h"
-
-#ifndef CLASS_WEBKITMAP_H
-#define CLASS_WEBKITMAP_H
 
 class WebkitMap : public QWebPage {
   Q_OBJECT;  
