@@ -1,20 +1,20 @@
 #ifndef STRUCT_LAYER_H
 #define STRUCT_LAYER_H
 
+#include <QObject>
+#include "BoundingBox.h"
 
-typedef struct {
-  double left;
-  double top;
-  double right;
-  double bottom;
-} BBox;
+class Layer : public QObject {
+  Q_OBJECT
 
+  public:
+    Layer(QObject* parent = 0);
+    QString name;
+    QString title;
+    BoundingBox bbox;
 
+};
 
-typedef struct {
-  QString name;
-  QString title;
-  BBox bbox; 
-} Layer;
+typedef QList<Layer *> LayerList;
 
 #endif

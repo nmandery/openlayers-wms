@@ -22,7 +22,7 @@ class WebkitMap : public QWebPage {
     bool hasLayer(const QString &layername);
 
     /// get a list of all layers in the map
-    bool getLayerList(QList<Layer> &layers);
+    LayerList getLayerList();
 
     /*
     // info from metatags
@@ -39,7 +39,17 @@ class WebkitMap : public QWebPage {
      */
     void errorMsg(const char * msgCode ,const char * msgText);
 
+  protected slots:
+    /**
+     * load the list of layers from the javascript map
+     * 
+     * if ok is not true, nothing will be done.
+     */
+    void loadLayerList(bool ok = true);
+
   protected:
+    LayerList layers;
+
     /// catch JS error from the QWebPage class
     void javaScriptConsoleMessage(const QString &message,
                 int lineNumber, 

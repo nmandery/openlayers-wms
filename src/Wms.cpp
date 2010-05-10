@@ -89,6 +89,8 @@ void Wms::respond(FastCgiQt::Request* request) {
         return; 
       }
     }
+    else if (key == "BBOX") {
+    }
   }
 
   if (p_service != "WMS") {
@@ -131,10 +133,7 @@ void Wms::getCapabilities()
     return;  
   }
  
-  QList<Layer> layers;
-  if (!renderer.map.getLayerList(layers)) {
-    return;
-  };
+  LayerList layers = renderer.map.getLayerList();
 
   //out << XML_HEADER << endl;
   out << "<WMT_MS_Capabilities version=\"1.1.1\">";
@@ -207,34 +206,30 @@ void Wms::getCapabilities()
       //
    // layers
 
-  for (QList<Layer>::ConstIterator layer_it = layers.constBegin();
+/*  for (LayerList::ConstIterator layer_it = layers.constBegin();
               layer_it != layers.constEnd();
               ++layer_it) {
-    Layer layer = *layer_it;
+    Layer layer = **layer_it;
+*/
+    while (!layers.isEmpty()) {
+      Layer *layer = layers.takeFirst();
 
     out << "<Layer queryable=\"0\">" 
-        << "<Name>" << layer.name << "</Name>"
-        << "<Title>" << layer.title << "</Title>"
+        << "<Name>" << layer->name << "</Name>"
+        << "<Title>" << layer->title << "</Title>"
         << "<SRS>" << proj << "</SRS>";
 
     
-    out << "<LatLonBoundingBox minx=\"" << layer.bbox.left << "\" miny=\""
-        << layer.bbox.bottom << "\" maxx=\"" << layer.bbox.right 
-        << "\" maxy=\"" << layer.bbox.top << "\"/>" 
-        << "<BoundingBox SRS=\"" << proj << "\" minx=\"" << layer.bbox.left 
-        << "\" miny=\"" << layer.bbox.bottom << "\" maxx=\"" 
-        << layer.bbox.right << "\" maxy=\"" << layer.bbox.top << "\"/>"; 
+    out << "<LatLonBoundingBox minx=\"" << layer->bbox.left << "\" miny=\""
+        << layer->bbox.bottom << "\" maxx=\"" << layer->bbox.right 
+        << "\" maxy=\"" << layer->bbox.top << "\"/>" 
+        << "<BoundingBox SRS=\"" << proj << "\" minx=\"" << layer->bbox.left 
+        << "\" miny=\"" << layer->bbox.bottom << "\" maxx=\"" 
+        << layer->bbox.right << "\" maxy=\"" << layer->bbox.top << "\"/>"; 
 
     out << "</Layer>";
-   /*
-      <Layer queryable="1"> 
-        <Name>ne2:10m_admin0_boundary_lines_land</Name> 
-        <Title>NE2 Admin 0 Boundary Lines Land (1:10000000)</Title> 
-        <SRS>EPSG:4326</SRS> 
-        <LatLonBoundingBox minx="-141.006" miny="-55.121" maxx="140.978" maxy="70.075"/> 
-        <BoundingBox SRS="EPSG:4326" minx="-141.006" miny="-55.121" maxx="140.978" maxy="70.075"/> 
-      </Layer> 
-  */
+
+    delete layer;
   }
 
   out << "</Layer>"
@@ -253,7 +248,7 @@ void Wms::getCapabilities()
 void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType type)
 {
   // only output a SE if there is an request
-  if (!m_request) { return;}
+  if (!m_request) { return;} // TODO: this crashes - -check is not sufficent
 
   QByteArray data;
   QTextStream out(&data);
