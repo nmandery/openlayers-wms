@@ -1,15 +1,7 @@
 #ifndef STRUCT_LAYER_H
 #define STRUCT_LAYER_H
 
-
-typedef struct {
-  double left;
-  double top;
-  double right;
-  double bottom;
-} BBox;
-
-
+#include "BBox.h"
 
 typedef struct {
   QString name;
