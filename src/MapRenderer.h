@@ -1,10 +1,9 @@
-#include <QtGui/QtGui>
-
-#include "WebkitMap.h"
-
-
 #ifndef CLASS_MAPRENDERER_H
 #define CLASS_MAPRENDERER_H
+
+#include <QtGui/QtGui>
+#include "WebkitMap.h"
+
 
 class MapRenderer : public QObject {
   Q_OBJECT;
