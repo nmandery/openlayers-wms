@@ -7,6 +7,8 @@ WebkitMap::WebkitMap() : QWebPage() {
   settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled, true);
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
   
+
+  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadLayerlist(bool))); //qt4.6
 }
 
 
@@ -37,13 +39,18 @@ bool WebkitMap::getProjection(QString &proj) {
 }
 
 
-bool WebkitMap::getLayerList(QList<Layer> &layers)  {
-  bool success = false;
+void WebkitMap::loadLayerList(bool ok) {
+ 
+  if (!ok) {
+    return;  
+  }
 
   QVariant jsres = mainFrame()->evaluateJavaScript("map.getLayerList();");
   qDebug() << jsres;
   if (!jsres.canConvert<QVariantMap>()) {
+
     qCritical() << "WebkitMap::getLayerList) : cannot convert to QVariantMap";  
+
   }
   else {
       QVariantMap lmap = jsres.toMap();
@@ -52,7 +59,7 @@ bool WebkitMap::getLayerList(QList<Layer> &layers)  {
       for (QVariantMap::ConstIterator layer_variant = lmap.constBegin();
                 layer_variant != lmap.constEnd();
                 ++layer_variant) {
-        Layer layer;
+        Layer layer; // = new Layer(); //(&layerlist); // = new Layer(&layerlist);
 
         qDebug() << "Found layer named " << layer_variant.key();
         layer.name = layer_variant.key();
@@ -94,11 +101,15 @@ bool WebkitMap::getLayerList(QList<Layer> &layers)  {
         }
 
         // add to layerlist
-        layers.append(layer);
+        layers.append(&layer);
       }
-      success = true;
   }
-  return success;
+ 
+}
+
+
+LayerList WebkitMap::getLayerList( )  {
+  return layers;
 }
 
 
