@@ -5,6 +5,7 @@
 #include <FastCgiQt/Request.h>
 #include "MapRenderer.h"
 #include "Layer.h"
+#include "BoundingBox.h"
 
 
 #define XML_HEADER "<?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>"
@@ -64,7 +65,8 @@ class Wms : public QObject {
     /// render a map
 		void getMap(const QString &image_format, 
               const QString &layer,
-              const QSize &image_size);
+              const QSize &image_size,
+              const BoundingBox &bbox);
 
     MapRenderer renderer;
 

@@ -2,6 +2,7 @@
 #define CLASS_BOUNDINGBOX_H_
 
 #include <QObject>
+#include <QStringList>
 
 class BoundingBox : public QObject {
   Q_OBJECT;
@@ -12,7 +13,13 @@ class BoundingBox : public QObject {
     double top;
     double right;
     double bottom;
-    //void fromString(const QString &bboxstr) {};
+    
+    /**
+     * extract the values from a WMS BBOX param
+     * in the form of 
+     * left + "," + bottom + "," + right + "," + top
+     */
+    bool fromString(const QString &bboxstr);
 };
 
 
