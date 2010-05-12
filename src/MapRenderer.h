@@ -9,8 +9,7 @@ class MapRenderer : public QObject {
   Q_OBJECT;
   
   public:
-    //MapRenderer(QObject *parent = 0) { /* TODO*/ };
-    MapRenderer();
+    MapRenderer(QObject *parent = 0);
 
     /// the WebkitMap instance
     WebkitMap map;
