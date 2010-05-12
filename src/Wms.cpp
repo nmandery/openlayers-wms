@@ -128,7 +128,7 @@ void Wms::getCapabilities()
 {
   QByteArray data;
   QTextStream out(&data);
-  QString wmsurl = m_request->url(FastCgiQt::LocationUrl).toEncoded(); 
+  QString wmsurl = Qt::escape(m_request->url(FastCgiQt::LocationUrl).toEncoded()); 
 
   QString proj;
   if (!renderer.map.getProjection(proj)) {
@@ -144,7 +144,7 @@ void Wms::getCapabilities()
 
   out << "<Service>"
       << "<Name>OGC:WMS</Name>"
-      << "<Title>" << renderer.title() << "</Title>"
+      << "<Title>" << Qt::escape(renderer.title()) << "</Title>"
       << "<Abstract/>"
       << "<OnlineResource " << XML_XLINK_NS << " xlink:href=\"" << wmsurl << "\"/>"
       << "<ContactInformation/>"
@@ -202,8 +202,8 @@ void Wms::getCapabilities()
   out << "<Exception><Format>" << MIMETYPE_SE << "</Format></Exception>";
 
   out << "<Layer>" 
-      << "<Title>" << renderer.title() << "</Title>" 
-      << "<SRS>" << proj << "</SRS>"; 
+      << "<Title>" << Qt::escape(renderer.title()) << "</Title>" 
+      << "<SRS>" << Qt::escape(proj) << "</SRS>"; 
       //<LatLonBoundingBox minx="-179.992" miny="-90.008" maxx="180.008" maxy="89.992"/> 
       //
    // layers
@@ -217,14 +217,14 @@ void Wms::getCapabilities()
     Layer* layer = layers[i];
 
     out << "<Layer queryable=\"0\">" 
-        << "<Name>" << layer->name << "</Name>"
-        << "<Title>" << layer->title << "</Title>"
-        << "<SRS>" << proj << "</SRS>";
+        << "<Name>" << Qt::escape(layer->name) << "</Name>"
+        << "<Title>" << Qt::escape(layer->title) << "</Title>"
+        << "<SRS>" << Qt::escape(proj) << "</SRS>";
 
     out << "<LatLonBoundingBox minx=\"" << layer->bbox.left << "\" miny=\""
         << layer->bbox.bottom << "\" maxx=\"" << layer->bbox.right 
         << "\" maxy=\"" << layer->bbox.top << "\"/>" 
-        << "<BoundingBox SRS=\"" << proj << "\" minx=\"" << layer->bbox.left 
+        << "<BoundingBox SRS=\"" << Qt::escape(proj) << "\" minx=\"" << layer->bbox.left 
         << "\" miny=\"" << layer->bbox.bottom << "\" maxx=\"" 
         << layer->bbox.right << "\" maxy=\"" << layer->bbox.top << "\"/>"; 
 
@@ -255,8 +255,8 @@ void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType 
 
   //out << XML_HEADER << endl;
   out << "<ServiceExceptionReport version=\"1.1.1\">"
-      << "<ServiceException code=\"" << msgCode << "\">\n"
-      << msgText << "\n"
+      << "<ServiceException code=\"" << Qt::escape(msgCode) << "\">\n"
+      << Qt::escape(msgText) << "\n"
       << "</ServiceException>"
       << "</ServiceExceptionReport>"
       << endl;
