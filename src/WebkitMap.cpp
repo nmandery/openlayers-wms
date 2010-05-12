@@ -1,6 +1,6 @@
 #include "WebkitMap.h"
 
-WebkitMap::WebkitMap() : QWebPage() {
+WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
 
    // webkit settings
   settings()->setAttribute(QWebSettings::JavascriptEnabled, true);

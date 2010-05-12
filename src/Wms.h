@@ -29,7 +29,7 @@ class Wms : public QObject {
 	Q_OBJECT;
 
   public:
-    Wms(QString&);
+    Wms(QString&, QObject* parent = 0);
 
   public slots:
     /**

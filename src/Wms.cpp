@@ -4,7 +4,8 @@
 
 
 
-Wms::Wms(QString& file) {
+Wms::Wms(QString& file, QObject * parent)
+  : QObject(parent) {
   
   qDebug("initializing OpenlayerWMS instance");
 

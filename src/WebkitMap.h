@@ -10,7 +10,7 @@ class WebkitMap : public QWebPage {
   Q_OBJECT;  
 
   public:
-    WebkitMap();
+    WebkitMap(QObject* parent = 0);
 
     /// resize to map and the Javascript map to the given size
     bool resizeMap(const QSize &size);

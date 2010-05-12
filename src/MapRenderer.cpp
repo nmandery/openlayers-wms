@@ -1,7 +1,8 @@
 #include "MapRenderer.h"
 
 
-MapRenderer::MapRenderer() {
+MapRenderer::MapRenderer(QObject* parent) 
+  : QObject(parent) {
 
   // no caching
   //QWebSettings::setMaximumPagesInCache(1);
