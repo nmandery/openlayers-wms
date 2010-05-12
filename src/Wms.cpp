@@ -41,7 +41,7 @@ void Wms::respond(FastCgiQt::Request* request) {
   QString p_format;
   QString p_layers;
   QString p_srs;
-  QString p_bbox;
+  BoundingBox p_bbox;
   int p_width = 0;
   int p_height = 0;
 
@@ -91,6 +91,7 @@ void Wms::respond(FastCgiQt::Request* request) {
       }
     }
     else if (key == "BBOX") {
+      p_bbox.fromString(it.value());
     }
   }
 
@@ -106,7 +107,7 @@ void Wms::respond(FastCgiQt::Request* request) {
   // dispatch requests
   if (p_request == "GETMAP") {
     QSize image_size(p_width, p_height); 
-    getMap(p_format, p_layers, image_size);
+    getMap(p_format, p_layers, image_size, p_bbox);
   }
 
   else if (p_request == "GETCAPABILITIES") {
@@ -212,15 +213,14 @@ void Wms::getCapabilities()
               ++layer_it) {
     Layer layer = **layer_it;
 */
-    while (!layers.isEmpty()) {
-      Layer *layer = layers.takeFirst();
+  for(int i = 0; i < layers.count(); ++i) {
+    Layer* layer = layers[i];
 
     out << "<Layer queryable=\"0\">" 
         << "<Name>" << layer->name << "</Name>"
         << "<Title>" << layer->title << "</Title>"
         << "<SRS>" << proj << "</SRS>";
 
-    
     out << "<LatLonBoundingBox minx=\"" << layer->bbox.left << "\" miny=\""
         << layer->bbox.bottom << "\" maxx=\"" << layer->bbox.right 
         << "\" maxy=\"" << layer->bbox.top << "\"/>" 
@@ -230,7 +230,6 @@ void Wms::getCapabilities()
 
     out << "</Layer>";
 
-    delete layer;
   }
 
   out << "</Layer>"
@@ -288,7 +287,7 @@ void Wms::logMessage( const char *msgCode, const char *msgText, QtMsgType type) 
   }
 }
 
-void Wms::getMap( const QString &image_format, const QString &layers, const QSize &image_size) {
+void Wms::getMap( const QString &image_format, const QString &layers, const QSize &image_size, const BoundingBox &bbox) {
 
   // check the validity of the input parameters
   

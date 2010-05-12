@@ -8,7 +8,7 @@ WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
   
 
-  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadLayerlist(bool))); //qt4.6
+  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadLayerList(bool))); //qt4.6
 }
 
 
@@ -59,10 +59,10 @@ void WebkitMap::loadLayerList(bool ok) {
       for (QVariantMap::ConstIterator layer_variant = lmap.constBegin();
                 layer_variant != lmap.constEnd();
                 ++layer_variant) {
-        Layer layer; // = new Layer(); //(&layerlist); // = new Layer(&layerlist);
+        Layer* layer = new Layer(this); //(&layerlist); // = new Layer(&layerlist);
 
         qDebug() << "Found layer named " << layer_variant.key();
-        layer.name = layer_variant.key();
+        layer->name = layer_variant.key();
 
         if (layer_variant.value().canConvert<QVariantMap>()) {
 
@@ -70,7 +70,7 @@ void WebkitMap::loadLayerList(bool ok) {
 
           // get title of the layer
           if (layer_props.contains(QString("title"))) {
-            layer.title = layer_props.value(QString("title")).toString();
+            layer->title = layer_props.value(QString("title")).toString();
             qDebug() << layer_props.value(QString("title"));
           }
 
@@ -80,28 +80,28 @@ void WebkitMap::loadLayerList(bool ok) {
             if (bbox_variants.size() == 4) {
 
               // TODO: check coordinates
-              layer.bbox.left   = bbox_variants.at(0).toDouble();
-              layer.bbox.top    = bbox_variants.at(1).toDouble();
-              layer.bbox.right  = bbox_variants.at(2).toDouble();
-              layer.bbox.bottom = bbox_variants.at(3).toDouble();
+              layer->bbox.left   = bbox_variants.at(0).toDouble();
+              layer->bbox.top    = bbox_variants.at(1).toDouble();
+              layer->bbox.right  = bbox_variants.at(2).toDouble();
+              layer->bbox.bottom = bbox_variants.at(3).toDouble();
 
             }
             else {
-              qWarning()  << "Can not convert the BBox of layer " << layer.name
+              qWarning()  << "Can not convert the BBox of layer " << layer->name
                           << ". It contains " << bbox_variants.size() << " elements instead of 4.";
             }
           }
           else {
-            qWarning() << "Layer " << layer.name << " has no BBox defined";  
+            qWarning() << "Layer " << layer->name << " has no BBox defined";  
           }
         }
         else {
-          qWarning()  << "Can not read properties of layer " << layer.name 
+          qWarning()  << "Can not read properties of layer " << layer->name 
                       << ". Ignoring this one";
         }
 
         // add to layerlist
-        layers.append(&layer);
+        layers.append(layer);
       }
   }
  
