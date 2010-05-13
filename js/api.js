@@ -45,5 +45,20 @@ OpenLayers.WmsMap = OpenLayers.Class(OpenLayers.Map, {
     return map.layers[layername] !== "undefined" && map.layers[layername] != null;
   },
 
+  setVisibleLayers(visible_layers) {
+    for(var i=0; i<layers.length; i++) {
+      var found = false;
+      for(var j=0, j<visible_layers.length; j++) {
+        if (i==j) {
+            found = true;
+            map.layers[i].setVisibility(true);
+        }
+      }
+      if (!found && map.layers[i].visibility) {
+        map.layers[i].setVisibility(true);
+      }
+    }
+  },
+
   CLASS_NAME: "OpenLayers.JsWmsApi"
 })

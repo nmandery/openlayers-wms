@@ -24,12 +24,9 @@ class WebkitMap : public QWebPage {
     /// get a list of all layers in the map
     LayerList getLayerList();
 
-    /*
-    // info from metatags
-    const QString getDescription();
-    const QString getAuthor();
-    const QSet<QString> getKeywords();
-    */
+    ///
+    void setVisibleLayers(const QStringList &layernames);
+
 
   signals:
     /**

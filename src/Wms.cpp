@@ -339,6 +339,8 @@ void Wms::getMap( const QString &image_format, const QString &layers, const QSiz
 
 
   // render
+  renderer.map.setVisibleLayers(layer_names_cleaned);
+
   QByteArray bytes;
   QBuffer buffer(&bytes); // write binary data
   buffer.open(QIODevice::WriteOnly);

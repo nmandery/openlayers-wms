@@ -131,6 +131,16 @@ bool WebkitMap::hasLayer(const QString &layername) {
   return exists;
 }
 
+
+void WebkitMap::setVisibleLayers(const QStringList &layernames) {
+
+  mainFrame()->evaluateJavaScript(
+    "map.setVisibleLayers([\"" % layernames.join("\",\"") 
+        % "\"])");
+ 
+}
+
+
 void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
   QString fullMessage = 
     "JS Error in \"" % sourceID % 
