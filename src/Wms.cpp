@@ -130,11 +130,7 @@ void Wms::getCapabilities()
   QTextStream out(&data);
   QString wmsurl = Qt::escape(m_request->url(FastCgiQt::LocationUrl).toEncoded()); 
 
-  QString proj;
-  if (!renderer.map.getProjection(proj)) {
-    return;  
-  }
- 
+  QString proj = renderer.map.getProjection();
   LayerList layers = renderer.map.getLayerList();
 
   //out << XML_HEADER << endl;

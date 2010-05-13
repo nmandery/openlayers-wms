@@ -16,7 +16,7 @@ class WebkitMap : public QWebPage {
     bool resizeMap(const QSize &size);
 
     /// get the Projection of the map in epsg format. (i.e. "EPSG:4326")
-    bool getProjection(QString &proj);    
+    const QString getProjection();    
 
     /// check if the layer with the given name exists 
     bool hasLayer(const QString &layername);
@@ -47,8 +47,11 @@ class WebkitMap : public QWebPage {
      */
     void loadLayerList(bool ok = true);
 
+    void loadProjection(bool ok = true);
+
   protected:
     LayerList layers;
+    QString projection;
 
     /// catch JS error from the QWebPage class
     void javaScriptConsoleMessage(const QString &message,

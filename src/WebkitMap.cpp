@@ -8,7 +8,9 @@ WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
   
 
+  // load map properties when the page has loaded
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadLayerList(bool))); //qt4.6
+  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadProjection(bool))); //qt4.6
 }
 
 
@@ -24,20 +26,23 @@ bool WebkitMap::resizeMap(const QSize &size) {
   return true;
 }
 
-bool WebkitMap::getProjection(QString &proj) {
-  bool success = false;
+void WebkitMap::loadProjection(bool ok) {
+  if (!ok) {
+    return;  
+  }
 
   QVariant jsres = mainFrame()->evaluateJavaScript("map.getProjectionCode();");
   if (!jsres.canConvert<QString>()) {
     qCritical() << "WebkitMap::getProjection() : cannot convert to string";  
   }
   else {
-    proj = jsres.toString();
-    success = true;
+    projection = jsres.toString();
   }
-  return success;
 }
 
+const QString WebkitMap::getProjection() { 
+  return projection;  
+}
 
 void WebkitMap::loadLayerList(bool ok) {
  
@@ -55,11 +60,10 @@ void WebkitMap::loadLayerList(bool ok) {
   else {
       QVariantMap lmap = jsres.toMap();
       
-      // loop over layerlist
       for (QVariantMap::ConstIterator layer_variant = lmap.constBegin();
                 layer_variant != lmap.constEnd();
                 ++layer_variant) {
-        Layer* layer = new Layer(this); //(&layerlist); // = new Layer(&layerlist);
+        Layer* layer = new Layer(this); 
 
         qDebug() << "Found layer named " << layer_variant.key();
         layer->name = layer_variant.key();
@@ -114,13 +118,17 @@ LayerList WebkitMap::getLayerList( )  {
 
 
 bool WebkitMap::hasLayer(const QString &layername) {
-  int success = false;
+  int exists = false;
 
-  QVariant jsres = mainFrame()->evaluateJavaScript("map.hasLayer(\"" % layername % "\");");
-  qDebug() << "hasLayer(" << layername << ") --> " << jsres;
-  success = jsres.toBool();
+  Layer* layer;
+  foreach(layer, layers) {
+    if (layer->name == layername) {
+      exists = true;
+      break;
+    } 
+  }
 
-  return success;
+  return exists;
 }
 
 void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
