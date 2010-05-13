@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QDebug>
 
 class BoundingBox : public QObject {
   Q_OBJECT;
@@ -23,4 +24,7 @@ class BoundingBox : public QObject {
 };
 
 
+
+QDataStream &operator<<(QDataStream &, const BoundingBox &);
+QDebug operator<<(QDebug dbg, const BoundingBox &);
 #endif

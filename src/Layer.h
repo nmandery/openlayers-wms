@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "BoundingBox.h"
+#include <QDebug>
 
 class Layer : public QObject {
   Q_OBJECT
@@ -14,6 +15,9 @@ class Layer : public QObject {
     BoundingBox bbox;
 
 };
+
+QDataStream &operator<<(QDataStream &, const Layer &);
+QDebug operator<<(QDebug dbg, const Layer&);
 
 typedef QList<Layer *> LayerList;
 

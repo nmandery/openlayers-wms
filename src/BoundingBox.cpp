@@ -35,3 +35,16 @@ bool BoundingBox::fromString(const QString &bboxstr) {
 
   return allok;
 }
+
+
+QDataStream& operator<<( QDataStream& out, const BoundingBox& bbox ) {
+    out << "BoundingBox(" << bbox.left << ", " << bbox.bottom << ", " 
+        << bbox.right << ", " << bbox.top << ")";
+    return out;
+}
+
+QDebug operator<<(QDebug dbg, const BoundingBox &bbox) {
+  dbg.nospace() <<  "BoundingBox(" << bbox.left << ", " << bbox.bottom << ", " 
+                << bbox.right << ", " << bbox.top << ")";
+  return dbg.space();
+}

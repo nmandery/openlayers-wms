@@ -287,6 +287,11 @@ void Wms::getMap( const QString &image_format, const QString &layers, const QSiz
 
   // check the validity of the input parameters
   
+  // bbox
+  // TODO
+  qDebug() << /*"BBOX : "  <<*/ bbox;
+
+
   // layers
   if (layers.isEmpty()) {
     serviceException(
