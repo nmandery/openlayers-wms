@@ -11,7 +11,8 @@ openlayers-wms.fcgi
 *.png
 *.pyc
 *.swp
-doc/
+doc/html
+doc/latex
 
 Doxyfile.user.bak
 install_manifest.txt
