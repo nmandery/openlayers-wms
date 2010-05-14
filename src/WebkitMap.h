@@ -5,6 +5,7 @@
 #include <QtWebKit/QtWebKit>
 #include <QStringBuilder>
 #include "Layer.h"
+#include "JsCallbacks.h"
 
 class WebkitMap : public QWebPage {
   Q_OBJECT;  
@@ -27,6 +28,7 @@ class WebkitMap : public QWebPage {
     ///
     void setVisibleLayers(const QStringList &layernames);
 
+    bool isReady();
 
   signals:
     /**
@@ -35,25 +37,46 @@ class WebkitMap : public QWebPage {
      * emits the error message
      */
     void errorMsg(const char * msgCode ,const char * msgText);
+    
+    void ready();
+
 
   protected slots:
+    void loadingStart();
+    void loadingEnd(bool ok = true);
+    void preparePage();
+    void jsEnd();
+
+  protected:
+    bool st_loading;
+    bool st_jswaiting;
+    LayerList layers;
+    QString projection;
+    JsCallbacks* jscallbacks;
+
     /**
      * load the list of layers from the javascript map
      * 
      * if ok is not true, nothing will be done.
      */
-    void loadLayerList(bool ok = true);
+    void loadLayerList();
 
-    void loadProjection(bool ok = true);
+    void loadProjection();
 
-  protected:
-    LayerList layers;
-    QString projection;
+    void jsStart();
+
 
     /// catch JS error from the QWebPage class
     void javaScriptConsoleMessage(const QString &message,
                 int lineNumber, 
                 const QString &sourceID);
+
+
+    /// override js alerts
+    void javaScriptAlert( QWebFrame * frame, const QString & msg) {};
+
+    /// ignore js dialogs
+    bool javaScriptConfirm(QWebFrame * frame, const QString & msg) { return true; };
 };
 
 #endif

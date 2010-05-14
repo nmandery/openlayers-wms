@@ -7,7 +7,6 @@ MapRenderer::MapRenderer(QObject* parent)
   // no caching
   //QWebSettings::setMaximumPagesInCache(1);
 
-  // connect signals
   connect(map.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(setLoadingFinished(bool))); //qt4.6
   connect(map.mainFrame(), SIGNAL(loadStarted()), this, SLOT(setLoadingStarted())); // qt4.6
   

@@ -1,6 +1,10 @@
 #include "WebkitMap.h"
 
 WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
+  st_loading = false;
+  st_jswaiting = false;
+
+  jscallbacks = new JsCallbacks(this);
 
    // webkit settings
   settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
@@ -8,9 +12,9 @@ WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
   
 
-  // load map properties when the page has loaded
-  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadLayerList(bool))); //qt4.6
-  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadProjection(bool))); //qt4.6
+  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadingEnd(bool))); //qt4.6
+  connect(this, SIGNAL(loadStarted()), this, SLOT(loadingStart())); // qt4.6
+  connect(jscallbacks, SIGNAL(ready()), this, SLOT(jsEnd())); 
 }
 
 
@@ -26,10 +30,7 @@ bool WebkitMap::resizeMap(const QSize &size) {
   return true;
 }
 
-void WebkitMap::loadProjection(bool ok) {
-  if (!ok) {
-    return;  
-  }
+void WebkitMap::loadProjection() {
 
   QVariant jsres = mainFrame()->evaluateJavaScript("map.getProjectionCode();");
   if (!jsres.canConvert<QString>()) {
@@ -44,11 +45,7 @@ const QString WebkitMap::getProjection() {
   return projection;  
 }
 
-void WebkitMap::loadLayerList(bool ok) {
- 
-  if (!ok) {
-    return;  
-  }
+void WebkitMap::loadLayerList() {
 
   QVariant jsres = mainFrame()->evaluateJavaScript("map.getLayerList();");
   qDebug() << jsres;
@@ -149,4 +146,47 @@ void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber,
   //qCritical() << fullMessage; 
 
   emit errorMsg("jsError", fullMessage.toAscii().data());
+}
+
+
+bool WebkitMap::isReady() {
+  return (!st_loading && !st_jswaiting);
+}
+
+
+void WebkitMap::loadingStart() {
+  st_loading = true;
+}
+
+void WebkitMap::loadingEnd(bool ok) {
+  st_loading = false;
+
+  if (ok) {
+    loadProjection();
+    loadLayerList();
+  } 
+
+  if (isReady()) {
+    emit ready();
+  }
+}
+
+
+void WebkitMap::jsStart() {
+  st_jswaiting = true;
+}
+
+
+
+void WebkitMap::jsEnd() {
+  st_jswaiting = false;  
+
+  if (isReady()) {
+    emit ready();
+  }
+}
+
+
+void WebkitMap::preparePage() {
+  mainFrame()->addToJavaScriptWindowObject(QCoreApplication::applicationName(), jscallbacks);    
 }
