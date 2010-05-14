@@ -12,9 +12,12 @@ WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
   
 
-  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadingEnd(bool))); //qt4.6
-  connect(this, SIGNAL(loadStarted()), this, SLOT(loadingStart())); // qt4.6
-  connect(jscallbacks, SIGNAL(ready()), this, SLOT(jsEnd())); 
+  connect(this, SIGNAL(loadFinished(bool)), 
+      this, SLOT(loadingEnd(bool))); 
+  connect(this, SIGNAL(loadStarted()), 
+      this, SLOT(loadingStart())); 
+  connect(jscallbacks, SIGNAL(ready()), 
+      this, SLOT(jsEnd())); 
 }
 
 
@@ -88,16 +91,21 @@ void WebkitMap::loadLayerList() {
 
             }
             else {
-              qWarning()  << "Can not convert the BBox of layer " << layer->name
-                          << ". It contains " << bbox_variants.size() << " elements instead of 4.";
+              qWarning()  << "Can not convert the BBox of layer " 
+                          << layer->name
+                          << ". It contains " 
+                          << bbox_variants.size() 
+                          << " elements instead of 4.";
             }
           }
           else {
-            qWarning() << "Layer " << layer->name << " has no BBox defined";  
+            qWarning() << "Layer " << layer->name 
+                      << " has no BBox defined";  
           }
         }
         else {
-          qWarning()  << "Can not read properties of layer " << layer->name 
+          qWarning()  << "Can not read properties of layer " 
+                      << layer->name 
                       << ". Ignoring this one";
         }
 
@@ -115,6 +123,7 @@ LayerList WebkitMap::getLayerList( )  {
 
 
 bool WebkitMap::hasLayer(const QString &layername) {
+
   int exists = false;
 
   Layer* layer;
@@ -138,7 +147,11 @@ void WebkitMap::setVisibleLayers(const QStringList &layernames) {
 }
 
 
-void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
+void WebkitMap::javaScriptConsoleMessage(
+      const QString &message, 
+      int lineNumber, 
+      const QString &sourceID) {
+
   QString fullMessage = 
     "JS Error in \"" % sourceID % 
     "\" (line " % QString::number(lineNumber) % "): " % message;
@@ -150,15 +163,20 @@ void WebkitMap::javaScriptConsoleMessage(const QString &message, int lineNumber,
 
 
 bool WebkitMap::isReady() {
+
   return (!st_loading && !st_jswaiting);
+
 }
 
 
 void WebkitMap::loadingStart() {
+
   st_loading = true;
+
 }
 
 void WebkitMap::loadingEnd(bool ok) {
+
   st_loading = false;
 
   if (ok) {
@@ -173,20 +191,29 @@ void WebkitMap::loadingEnd(bool ok) {
 
 
 void WebkitMap::jsStart() {
+
   st_jswaiting = true;
+
 }
 
 
 
 void WebkitMap::jsEnd() {
+
   st_jswaiting = false;  
 
   if (isReady()) {
     emit ready();
   }
+
 }
 
 
 void WebkitMap::preparePage() {
-  mainFrame()->addToJavaScriptWindowObject(QCoreApplication::applicationName(), jscallbacks);    
+
+  // register the callbacks in the page
+  mainFrame()->addToJavaScriptWindowObject(
+      QCoreApplication::applicationName(), 
+      jscallbacks);    
+
 }

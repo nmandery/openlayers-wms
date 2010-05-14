@@ -1,6 +1,7 @@
 #include "JsCallbacks.h"
 
-JsCallbacks::JsCallbacks(QObject* parent) : QObject(parent) {
+JsCallbacks::JsCallbacks(QObject* parent) 
+    : QObject(parent) {
   
 }
 

@@ -217,12 +217,15 @@ void Wms::getCapabilities()
         << "<Title>" << Qt::escape(layer->title) << "</Title>"
         << "<SRS>" << Qt::escape(proj) << "</SRS>";
 
-    out << "<LatLonBoundingBox minx=\"" << layer->bbox.left << "\" miny=\""
-        << layer->bbox.bottom << "\" maxx=\"" << layer->bbox.right 
+    out << "<LatLonBoundingBox minx=\"" << layer->bbox.left 
+        << "\" miny=\"" << layer->bbox.bottom 
+        << "\" maxx=\"" << layer->bbox.right 
         << "\" maxy=\"" << layer->bbox.top << "\"/>" 
-        << "<BoundingBox SRS=\"" << Qt::escape(proj) << "\" minx=\"" << layer->bbox.left 
-        << "\" miny=\"" << layer->bbox.bottom << "\" maxx=\"" 
-        << layer->bbox.right << "\" maxy=\"" << layer->bbox.top << "\"/>"; 
+        << "<BoundingBox SRS=\"" << Qt::escape(proj) 
+        << "\" minx=\"" << layer->bbox.left 
+        << "\" miny=\"" << layer->bbox.bottom 
+        << "\" maxx=\"" << layer->bbox.right 
+        << "\" maxy=\"" << layer->bbox.top << "\"/>"; 
 
     out << "</Layer>";
 
@@ -267,19 +270,25 @@ void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType 
 }
 
 void Wms::logMessage( const char *msgCode, const char *msgText, QtMsgType type) {
+
   switch(type) {
+
     case QtDebugMsg:
       qDebug() << msgText;
       break;
+
     case QtCriticalMsg:
       qCritical() << msgText;
       break;
+
     case QtFatalMsg:
       qCritical() << msgText;
       break;
+
     case QtWarningMsg:
       qWarning() << msgText;
       break;
+
   }
 }
 

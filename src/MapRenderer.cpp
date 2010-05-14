@@ -7,8 +7,10 @@ MapRenderer::MapRenderer(QObject* parent)
   // no caching
   //QWebSettings::setMaximumPagesInCache(1);
 
-  connect(map.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(setLoadingFinished(bool))); //qt4.6
-  connect(map.mainFrame(), SIGNAL(loadStarted()), this, SLOT(setLoadingStarted())); // qt4.6
+  connect(map.mainFrame(), SIGNAL(loadFinished(bool)), 
+      this, SLOT(setLoadingFinished(bool))); 
+  connect(map.mainFrame(), SIGNAL(loadStarted()), 
+      this, SLOT(setLoadingStarted())); 
   
   // no scrollbars
   map.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
@@ -21,38 +23,49 @@ MapRenderer::MapRenderer(QObject* parent)
 
 
 const QString MapRenderer::title() {
+
   return map.mainFrame()->title();  
+
 }
 
 
 
 void MapRenderer::setLoadingFinished(bool success) {
+
   loading_finished = true;
   loaded = success;  
+
 }
 
 
 
 void MapRenderer::setLoadingStarted() {
+
   loading_finished = false;
+
 }
 
 
 
 bool MapRenderer::hasLoaded() {
+
   return loaded;
+
 }
 
 
 
 bool MapRenderer::load(QString &ifile) {
+
   file = ifile;
   return refresh();
+
 }
 
 
 
 bool MapRenderer::refresh() {
+
   QFileInfo fi(file);
   if ( fi.exists() ) {
     map.mainFrame()->load(QUrl("file://" + fi.absoluteFilePath())); 
@@ -74,11 +87,14 @@ bool MapRenderer::refresh() {
     emit errorMsg("urlLoad", "Could not load the url ");
   }
   return loaded;
+
 }
 
 
 
-bool MapRenderer::render(QBuffer & target, const char *format, const QSize &image_size) {
+bool MapRenderer::render(QBuffer & target, 
+    const char *format, 
+    const QSize &image_size) {
 
   qDebug() << "rendering in " << format << " and size " << image_size;
 
@@ -103,10 +119,13 @@ bool MapRenderer::render(QBuffer & target, const char *format, const QSize &imag
 
   image.save(&target, format);
   return true;
+
 }
 
 
 
 QList<QByteArray> MapRenderer::getImageFormats() {
+
   return QImageWriter::supportedImageFormats();
+
 }
