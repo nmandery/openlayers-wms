@@ -6,5 +6,6 @@ JsCallbacks::JsCallbacks(QObject* parent)
 }
 
 void JsCallbacks::done() {
+  qDebug() << "JsCallbacks::done()";
   emit ready();  
 }

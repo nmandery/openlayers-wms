@@ -247,7 +247,7 @@ void Wms::getCapabilities()
 void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType type)
 {
   // only output a SE if there is an request
-  if (!m_request) { return;} // TODO: this crashes - -check is not sufficent
+  if (m_request == NULL) { return;} // TODO: this crashes when pointer is invalid- -check is not sufficent
 
   QByteArray data;
   QTextStream out(&data);

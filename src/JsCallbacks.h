@@ -2,6 +2,7 @@
 #define CLASS_JSCALLBACKS_H
 
 #include <QObject>
+#include <QDebug>
 
 class JsCallbacks : public QObject {
 
@@ -22,7 +23,7 @@ class JsCallbacks : public QObject {
      * to be called from Javascript
      * when it has finished perforing a task
      */
-    void done();
+    Q_INVOKABLE void done();
 
 };
 

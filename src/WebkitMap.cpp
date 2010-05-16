@@ -16,6 +16,10 @@ WebkitMap::WebkitMap(QObject* parent) : QWebPage(parent) {
       this, SLOT(loadingEnd(bool))); 
   connect(this, SIGNAL(loadStarted()), 
       this, SLOT(loadingStart())); 
+  
+  connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
+      this, SLOT(preparePage()));
+
   connect(jscallbacks, SIGNAL(ready()), 
       this, SLOT(jsEnd())); 
 }
