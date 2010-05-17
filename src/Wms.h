@@ -75,4 +75,4 @@ class Wms : public QObject {
 
 };
 
-#endif
+#endif //CLASS_WMS_H

@@ -1,5 +1,5 @@
-#ifndef CLASS_BOUNDINGBOX_H_
-#define CLASS_BOUNDINGBOX_H_
+#ifndef CLASS_BOUNDINGBOX_H
+#define CLASS_BOUNDINGBOX_H
 
 #include <QObject>
 #include <QStringList>
@@ -27,4 +27,5 @@ class BoundingBox : public QObject {
 
 QDataStream &operator<<(QDataStream &, const BoundingBox &);
 QDebug operator<<(QDebug dbg, const BoundingBox &);
-#endif
+
+#endif //CLASS_BOUNDINGBOX_H

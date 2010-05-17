@@ -62,7 +62,7 @@ OpenLayers.WmsMap = OpenLayers.Class(OpenLayers.Map, {
   },
 
   callDone: function() {
-    if (typeof OpenlayersWMS !== 'undefined') {
+    if (typeof OpenlayersWMS.done === "function") {
       OpenlayersWMS.done();  
     } 
   }, 

@@ -45,4 +45,4 @@ class MapRenderer : public QObject {
     QString file;
 };
 
-#endif
+#endif //CLASS_MAPRENDERER_H

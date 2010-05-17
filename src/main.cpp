@@ -1,9 +1,10 @@
 #include <FastCgiQt/Manager.h>
-#include <QApplication> // we need a GUI application to run webkit
+#include <QApplication>
 
 #include "Wms.h"
 
 #define APP_NAME "OpenlayersWMS"
+#define APP_VERSION "0.1"
 
 void msgHandler(QtMsgType type, const char *msg)
 {
@@ -32,8 +33,13 @@ void msgHandler(QtMsgType type, const char *msg)
 int main(int argc, char** argv) {
 
   qInstallMsgHandler(msgHandler);
+
+  // this app has to be a QApplication (GUI-App)
+  // to be able to run webkit
 	QApplication application(argc, argv);
+
 	application.setApplicationName(APP_NAME);
+  application.setApplicationVersion(APP_VERSION);
 
   QString file("../html/unitr.html");
 

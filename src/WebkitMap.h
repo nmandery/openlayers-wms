@@ -81,4 +81,4 @@ class WebkitMap : public QWebPage {
     bool javaScriptConfirm(QWebFrame * frame, const QString & msg) { return true; };
 };
 
-#endif
+#endif //CLASS_WEBKITMAP_H

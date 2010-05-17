@@ -1,6 +1,7 @@
 #ifndef CLASS_JSCALLBACKS_H
 #define CLASS_JSCALLBACKS_H
 
+#include <QCoreApplication>
 #include <QObject>
 #include <QDebug>
 
@@ -25,6 +26,8 @@ class JsCallbacks : public QObject {
      */
     Q_INVOKABLE void done();
 
+    Q_INVOKABLE const QString getVersion();
+
 };
 
-#endif
+#endif //CLASS_JSCALLBACKS_H
