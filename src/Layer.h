@@ -1,5 +1,5 @@
-#ifndef STRUCT_LAYER_H
-#define STRUCT_LAYER_H
+#ifndef CLASS_LAYER_H
+#define CLASS_LAYER_H
 
 #include <QObject>
 #include "BoundingBox.h"
