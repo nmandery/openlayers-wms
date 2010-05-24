@@ -1,0 +1,121 @@
+<html>
+<head>
+    <title>worldfactbook</title>
+ 
+    <meta name="description" content="This document is a tutorial about Qt development">
+    <meta name="keywords" content="Qt, WebKit, Programming">
+    <meta name="author" content="Rainer Wahnsinn">
+
+    <script src="js/OpenLayers.js"></script>
+    <script src="../js/api.js"></script>
+ 
+    <script type="text/javascript">
+        var map; //complex object of type OpenLayers.Map
+ 
+        function init() {
+            map = new OpenLayers.WmsMap ("map", {
+                controls:[
+                    new OpenLayers.Control.Navigation(),
+                    // new OpenLayers.Control.PanZoomBar(),
+                    // new OpenLayers.Control.Attribution()
+					      ]
+            } );
+ 
+
+            var wfb = new OpenLayers.Layer.WMS(
+                            "worldfactbook",
+                                            "http://localhost/cgi-bin/mapserv?map=/srv/www/maps/worldfactbook.map&", 
+                                                            {layers: "worldfactbook"}
+                                                                        );
+            map.addLayer(wfb);
+            map.zoomToMaxExtent();
+        }
+
+
+
+/*
+JsWmsAPI = function () {
+
+  this.map = null;
+
+  this.title = function() { return document.title;};
+
+  this.resize = function( width, height ) {
+    document.body.style.width = width;
+    map.div.style.width = width;
+    document.body.style.height = height;
+    map.div.style.height = height;
+    
+    map.updateSize();
+  };
+
+  this.getProjectionCode = function() {
+    if (typeof map.displayProjection === 'undefined') {
+      return map.projection.projCode;  
+    }
+    else {
+      return map.displayProjection.projCode;  
+    }
+  };
+
+};
+
+mapapi = new JsWmsAPI();
+mapapi.map = map;
+
+function ol_serviceinfo(m) {
+  var info = {};
+  info.title = document.title;
+
+  // projection and extent
+  var dprojo = null;
+  var proj = map.projection.projCode;
+  if (map.displayProjection != null) {
+    var dproj = map.displayProjection.projCode;
+    dprojo = new OpenLayers.Projection(dproj);
+
+    info.projection = dproj; 
+    info.extent = map.maxExtent.transform(
+      map.getProjectionObject(),
+      dprojo
+    ).toArray();
+  }
+  else {
+    info.projection = proj;
+    info.extent = map.maxExtent.toArray();
+  }
+
+  // layers
+  info.layers = {};
+  for(var i=0; i<m.layers.length; i++) {
+    info.layers[i] = {};
+    info.layers[i].name = m.layers[i].name;
+
+    if (dprojo==null) {
+      info.layers[i].extent = m.layers[i].maxExtent.toArray();
+    }
+    else {
+      info.layers[i].extent = m.layers[i].maxExtent.transform(
+        map.getProjectionObject(),
+        dprojo
+      ).toArray();
+    }
+  }
+
+  return info;
+};
+*/
+/*
+JSON.stringify()
+*/
+
+    </script>
+</head>
+ 
+<body onload="init();" style="padding:0px; margin:0px; width:600px; height:600px; background:#ffffffff;">
+    <div style="margin:0px; padding:0px; background:#ffffffff;" id="map"></div>
+  <!--<div style="width:100%; height:100%; margin:0px; padding:0px; background:#00ff00;" id="map"></div>
+  -->
+</body>
+
+</html>

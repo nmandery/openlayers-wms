@@ -9,6 +9,7 @@ Wms::Wms(QString& file, QObject * parent)
   
   qDebug("initializing OpenlayerWMS instance");
 
+  in_request = false;
 
   // return error messages as service exceptions
   connect(&renderer.map, SIGNAL(errorMsg(const char *, const char *)), 
@@ -29,6 +30,7 @@ Wms::Wms(QString& file, QObject * parent)
 void Wms::respond(FastCgiQt::Request* request) {
 
   m_request = request;
+  in_request = true;
 
   // try to reload the page if it failed previously
   if (!renderer.hasLoaded()) {
@@ -126,6 +128,11 @@ void Wms::respond(FastCgiQt::Request* request) {
 
 void Wms::getCapabilities()
 {
+
+  if (!in_request) {
+    return;  
+  }
+
   QByteArray data;
   QTextStream out(&data);
   QString wmsurl = Qt::escape(m_request->url(FastCgiQt::LocationUrl).toEncoded()); 
@@ -241,13 +248,16 @@ void Wms::getCapabilities()
   QByteArray content_length = QByteArray::number(data.length());
   m_request->setHeader(HTTP_CONTENT_LEN, content_length );
   m_request->write(data);
+  in_request = false;
 }
 
 
 void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType type)
 {
   // only output a SE if there is an request
-  if (m_request == NULL) { return;} // TODO: this crashes when pointer is invalid- -check is not sufficent
+  if (!in_request) {
+    return;  
+  }
 
   QByteArray data;
   QTextStream out(&data);
@@ -266,6 +276,7 @@ void Wms::serviceException( const char *msgCode, const char *msgText, QtMsgType 
   QByteArray content_length = QByteArray::number(data.length());
   m_request->setHeader(HTTP_CONTENT_LEN, content_length );
   m_request->write(data);
+  in_request = false;
 
 }
 
@@ -293,6 +304,10 @@ void Wms::logMessage( const char *msgCode, const char *msgText, QtMsgType type) 
 }
 
 void Wms::getMap( const QString &image_format, const QString &layers, const QSize &image_size, const BoundingBox &bbox) {
+
+  if (!in_request) {
+    return;  
+  }
 
   // check the validity of the input parameters
   
@@ -360,6 +375,7 @@ void Wms::getMap( const QString &image_format, const QString &layers, const QSiz
     QByteArray content_length = QByteArray::number(bytes.length());
     m_request->setHeader(HTTP_CONTENT_LEN, content_length );
     m_request->write(bytes);
+    in_request = false;
   }
   else {
     serviceException(

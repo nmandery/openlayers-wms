@@ -47,16 +47,16 @@ OpenLayers.WmsMap = OpenLayers.Class(OpenLayers.Map, {
   },
 
   setVisibleLayers: function(visible_layers) {
-    for(var i=0; i < layers.length; i++) {
+    for(var i=0; i < map.layers.length; i++) {
       var found = false;
-      for(var j=0; j < visible_layers.length; j++) {
+      for(var j=0; j  < visible_layers.length; j++) {
         if (i==j) {
             found = true;
             map.layers[i].setVisibility(true);
         }
       }
       if (!found && map.layers[i].visibility) {
-        map.layers[i].setVisibility(true);
+        map.layers[i].setVisibility(false);
       }
     }
   },

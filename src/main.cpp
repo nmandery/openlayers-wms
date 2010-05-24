@@ -41,7 +41,9 @@ int main(int argc, char** argv) {
 	application.setApplicationName(APP_NAME);
   application.setApplicationVersion(APP_VERSION);
 
-  QString file("../html/unitr.html");
+  //QString file("../html/unitr.html");
+  //QString file("../html/osm.html");
+  QString file("../html/wfb.html");
 
 	FastCgiQt::Manager manager;
   Wms responder(file);

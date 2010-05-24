@@ -143,10 +143,11 @@ bool WebkitMap::hasLayer(const QString &layername) {
 
 
 void WebkitMap::setVisibleLayers(const QStringList &layernames) {
+  qDebug() << "Setting visible Layers to " << layernames;
 
   mainFrame()->evaluateJavaScript(
     "map.setVisibleLayers([\"" % layernames.join("\",\"") 
-        % "\"])");
+        % "\"]);");
  
 }
 

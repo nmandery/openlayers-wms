@@ -22,8 +22,9 @@
 #define MIMETYPE_TIF "image/tiff"
 
 // http headers
-#define HTTP_CONTENT_TYPE "Content-Type"
-#define HTTP_CONTENT_LEN "Content-Length"
+#define HTTP_CONTENT_TYPE "CONTENT-TYPE"  // uppercase, otherwise fastcgiqt 
+                                          // will set its own content-type header
+#define HTTP_CONTENT_LEN "CONTENT-LENGTH"
 
 
 class Wms : public QObject {
@@ -72,6 +73,9 @@ class Wms : public QObject {
 
     /// the request object of the current request
     FastCgiQt::Request* m_request;
+    
+    /// true when thare is an request
+    bool in_request;
 
 };
 
