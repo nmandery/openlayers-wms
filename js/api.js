@@ -14,8 +14,8 @@ OpenLayers.WmsMap = OpenLayers.Class(OpenLayers.Map, {
   },
 
   getProjectionCode: function() {
-    if (typeof map.displayProjection === 'undefined') {
-      return map.projection.projCode;  
+    if (map.displayProjection == null) {
+      return map.projection;  
     }
     else {
       return map.displayProjection.projCode;  
